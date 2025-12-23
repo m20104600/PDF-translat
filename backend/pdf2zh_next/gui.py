@@ -1610,52 +1610,102 @@ custom_blue = gr.themes.Color(
 )
 
 custom_css = """
-    .secondary-text {color: #888 !important; font-size: 0.9em;}
+    .secondary-text {color: rgba(255, 255, 255, 0.7) !important; font-size: 0.9em;}
     footer {visibility: hidden}
-    .env-warning {color: #dd5500 !important;}
-    .env-success {color: #559900 !important;}
+    .env-warning {color: #ffaa00 !important;}
+    .env-success {color: #00ffaa !important;}
 
-    /* Modern font system */
+    /* Premium Font System */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+    
     body, .gradio-container {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+        font-family: 'Outfit', sans-serif !important;
+        background: radial-gradient(circle at top right, #1a1a2e, #16213e) fixed !important;
+        color: #ffffff !important;
     }
 
-    /* Enhanced file upload area */
+    /* Glassmorphism Cards */
+    .gradio-container .gr-block, .gradio-container .gr-form {
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    }
+
+    .gradio-container .gr-block:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* Enhanced File Upload Area (Glow effect) */
     .input-file {
-        border: 2px dashed #165DFF !important;
-        border-radius: 12px !important;
-        background-color: #f8faff !important;
-        transition: all 0.3s ease !important;
+        border: 2px dashed rgba(22, 93, 255, 0.5) !important;
+        border-radius: 16px !important;
+        background: rgba(22, 93, 255, 0.08) !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
     .input-file:hover {
-        background-color: #f0f5ff !important;
-        border-color: #0E42D2 !important;
+        background: rgba(22, 93, 255, 0.15) !important;
+        border-color: #4080FF !important;
+        box-shadow: 0 0 20px rgba(22, 93, 255, 0.4) !important;
+        transform: scale(1.01) !important;
     }
 
-    /* Buttons stylings */
+    /* Colorful Gradient Buttons */
     .gr-button-primary {
-        box-shadow: 0 4px 6px -1px rgba(22, 93, 255, 0.2), 0 2px 4px -1px rgba(22, 93, 255, 0.1) !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        background: linear-gradient(135deg, #165DFF 0%, #4080FF 50%, #8E2DE2 100%) !important;
+        border: none !important;
+        border-radius: 12px !important;
+        color: white !important;
+        font-weight: 600 !important;
+        box-shadow: 0 10px 20px -10px rgba(22, 93, 255, 0.5) !important;
+        transition: all 0.3s ease !important;
     }
     .gr-button-primary:hover {
-        transform: translateY(-1px) !important;
-        box-shadow: 0 10px 15px -3px rgba(22, 93, 255, 0.3) !important;
+        transform: translateY(-2px) scale(1.02) !important;
+        box-shadow: 0 20px 30px -10px rgba(22, 93, 255, 0.6) !important;
+        background: linear-gradient(135deg, #4080FF 0%, #8E2DE2 100%) !important;
+    }
+
+    /* Input focus styling */
+    input, textarea, select {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 8px !important;
+    }
+    input:focus {
+        border-color: #4080FF !important;
+        box-shadow: 0 0 10px rgba(64, 128, 255, 0.3) !important;
     }
 
     .progress-bar-wrap {
-        border-radius: 8px !important;
-        height: 10px !important;
+        border-radius: 10px !important;
+        height: 12px !important;
+        background: rgba(255, 255, 255, 0.1) !important;
     }
 
     .progress-bar {
-        border-radius: 8px !important;
-        background: linear-gradient(90deg, #165DFF, #4080FF) !important;
+        border-radius: 10px !important;
+        background: linear-gradient(90deg, #165DFF, #8E2DE2, #4080FF) !important;
+        background-size: 200% auto !important;
+        animation: gradient-flow 2s linear infinite !important;
+    }
+
+    @keyframes gradient-flow {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
     }
 
     .pdf-canvas canvas {
         width: 100%;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        border-radius: 4px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     """
 
@@ -1695,7 +1745,9 @@ with gr.Blocks(
         render=False,
     )
     with Translate(get_translation_dic(translation_file_path), lang_selector):
-        gr.Markdown("# [PDF Translator](https://github.com/m20104600/PDF-translat)")
+        gr.Markdown(
+            "# <span style='background: linear-gradient(90deg, #4080FF, #8E2DE2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 2.5em;'>PDF Translator</span>"
+        )
 
         translation_engine_arg_inputs = []
         detail_text_inputs = []
