@@ -1696,6 +1696,13 @@ custom_css = """
         color: #4338ca !important;
         font-weight: 600 !important;
     }
+
+    /* Explicitly highlight the indicator (circle/check) */
+    .gradio-container input[type="radio"], .gradio-container input[type="checkbox"] {
+        accent-color: #4f46e5 !important;
+        width: 1.25em !important;
+        height: 1.25em !important;
+    }
     
     /* Progress Bar */
     .progress-bar {
