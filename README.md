@@ -22,6 +22,7 @@ services:
   pdf-webui:
     image: m20104600/pdf-translator:latest # 或者使用本地 build: .
     container_name: pdf-translator-webui
+    network_mode: bridge
     restart: always
     ports:
       - '7860:7860' # WebUI 访问端口
@@ -33,6 +34,7 @@ services:
   pdf-api:
     image: m20104600/pdf-translator:latest
     container_name: pdf-translator-api
+    network_mode: bridge
     restart: always
     ports:
       - '8000:8000' # API 访问端口
