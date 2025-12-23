@@ -9,6 +9,32 @@
 - **`start.bat`**: 启动官方 WebUI 界面。推荐大多数用户使用，提供完整的图形化配置。
 - **`start_local.bat`**: 启动自定义后端服务 (`app.main_new`)。适合需要使用自定义接口或进行二次开发的场景。
 
+## 🐳 Docker 部署
+
+如果您更喜欢使用 Docker，我们也提供了完整的支持。
+
+### 方式一：使用 Docker Compose (推荐)
+
+一键启动 WebUI 和自定义 API：
+```bash
+docker-compose up -d
+```
+- **WebUI**: [http://localhost:7860](http://localhost:7860)
+- **API**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### 方式二：使用 Docker 命令
+
+**启动官方 WebUI:**
+```bash
+docker build -t pdf-translator .
+docker run -d -p 7860:7860 -v ${PWD}/uploads:/app/uploads -v ${PWD}/outputs:/app/outputs pdf-translator
+```
+
+**启动自定义 API:**
+```bash
+docker run -d -p 8000:8000 -v ${PWD}/uploads:/app/uploads -v ${PWD}/outputs:/app/outputs pdf-translator python -m uvicorn app.main_new:app --host 0.0.0.0 --port 8000
+```
+
 ## ✨ 主要功能
 
 - **排版保留**：完美保留 PDF 原始布局、图片和复杂的数学公式。

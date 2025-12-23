@@ -1,0 +1,21 @@
+services:
+  pdf-webui:
+    build: .
+    container_name: pdf-translator-webui
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./outputs:/app/outputs
+    restart: always
+
+  pdf-api:
+    build: .
+    container_name: pdf-translator-api
+    ports:
+      - "8000:8000"
+    command: ["python", "-m", "uvicorn", "app.main_new:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - ./uploads:/app/uploads
+      - ./outputs:/app/outputs
+    restart: always
