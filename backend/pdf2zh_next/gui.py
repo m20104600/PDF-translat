@@ -1697,11 +1697,44 @@ custom_css = """
         font-weight: 600 !important;
     }
 
-    /* Explicitly highlight the indicator (circle/check) */
-    .gradio-container input[type="radio"], .gradio-container input[type="checkbox"] {
-        accent-color: #4f46e5 !important;
+    /* Custom Drawn Indicators for Max Visibility */
+    .gradio-container input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 1.2em !important;
+        height: 1.2em !important;
+        border: 2px solid #6366f1 !important;
+        border-radius: 4px !important;
+        background-color: white !important;
+        vertical-align: sub !important;
+        cursor: pointer !important;
+        position: relative !important;
+    }
+    
+    .gradio-container input[type="checkbox"]:checked {
+        background-color: #4f46e5 !important;
+        border-color: #4f46e5 !important;
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e") !important;
+        background-size: 100% 100% !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+    }
+    
+    .gradio-container input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
         width: 1.25em !important;
         height: 1.25em !important;
+        border: 2px solid #6366f1 !important;
+        border-radius: 50% !important;
+        background-color: white !important;
+        vertical-align: sub !important;
+        cursor: pointer !important;
+    }
+    
+    .gradio-container input[type="radio"]:checked {
+        border-color: #4f46e5 !important;
+        background: radial-gradient(circle, #4f46e5 45%, white 50%) !important;
     }
     
     /* Progress Bar */
