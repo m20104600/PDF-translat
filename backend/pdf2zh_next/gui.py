@@ -1629,7 +1629,7 @@ custom_css = """
         background: rgba(255, 255, 255, 0.05) !important;
         backdrop-filter: blur(12px) !important;
         -webkit-backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 20px !important;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
         transition: transform 0.3s ease, box-shadow 0.3s ease !important;
@@ -1672,15 +1672,46 @@ custom_css = """
     }
 
     /* Input focus styling */
-    input, textarea, select {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    /* Fixed Text Visibility */
+    .gradio-container label, .gradio-container span, .gradio-container p, .gradio-container h1, .gradio-container h2, .gradio-container h3, .gradio-container h4 {
+        color: #f0f0f0 !important;
+    }
+    
+    .gradio-container .prose * {
+        color: #f0f0f0 !important;
+    }
+
+    /* Unified Input Styling - Dark Glass */
+    .gradio-container input, .gradio-container textarea, .gradio-container select, .gradio-container .gr-input {
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
         color: white !important;
         border-radius: 8px !important;
     }
-    input:focus {
+    
+    .gradio-container input:focus, .gradio-container textarea:focus, .gradio-container select:focus {
         border-color: #4080FF !important;
-        box-shadow: 0 0 10px rgba(64, 128, 255, 0.3) !important;
+        background: rgba(0, 0, 0, 0.45) !important;
+        box-shadow: 0 0 10px rgba(64, 128, 255, 0.2) !important;
+    }
+
+    /* Dropdown specific fixes */
+    .gradio-container .gr-dropdown .wrap-inner {
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 8px !important;
+    }
+    
+    .gradio-container .gr-dropdown .selector-item {
+        color: #333 !important; /* Dropdown items need to be readable on their light bg usually default in gradio, or we enforce dark */
+    }
+    
+    /* Force dark dropdown menu if possible, otherwise keep text dark for contrast if menu is light */
+    /* Gradio unfortunately handles dropdown options via portal often outside styling scope easily. 
+       Let's stick to making the input box itself harmonious. */
+
+    .gradio-container .gr-radio, .gradio-container .gr-checkbox {
+         background: transparent !important;
     }
 
     .progress-bar-wrap {
