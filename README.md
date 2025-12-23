@@ -26,8 +26,7 @@ services:
     ports:
       - '7860:7860' # WebUI 访问端口
     volumes:
-      - './data:/app/data' # 数据目录（包含uploads和outputs）
-      - '~/.config/pdf2zh:/root/.config/pdf2zh' # 配置目录
+      - './data:/app/data' # 包含 webui/, api/, config/, sessions/, users.db
     environment:
       - 'PDF2ZH_UI_LANG=zh' # 界面语言
 
@@ -39,8 +38,9 @@ services:
       - '8000:8000' # API 访问端口
     command: ["python", "-m", "uvicorn", "app.main_new:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
-      - './data:/app/data'
-      - '~/.config/pdf2zh:/root/.config/pdf2zh'
+      - './data:/app/data' # 共享数据目录
+    environment:
+      - 'JWT_SECRET_KEY=change-this-in-production' # 生产环境请修改
 ```
 
 **常用管理命令：**
@@ -64,12 +64,18 @@ docker-compose down
 **启动官方 WebUI:**
 ```bash
 docker build -t pdf-translator .
-docker run -d -p 7860:7860 -v ${PWD}/data:/app/data -v ~/.config/pdf2zh:/root/.config/pdf2zh pdf-translator
+docker run -d -p 7860:7860 \
+  -v ${PWD}/data:/app/data \
+  -e PDF2ZH_UI_LANG=zh \
+  pdf-translator
 ```
 
 **启动自定义 API:**
 ```bash
-docker run -d -p 8000:8000 -v ${PWD}/data:/app/data -v ~/.config/pdf2zh:/root/.config/pdf2zh pdf-translator python -m uvicorn app.main_new:app --host 0.0.0.0 --port 8000
+docker run -d -p 8000:8000 \
+  -v ${PWD}/data:/app/data \
+  -e JWT_SECRET_KEY=your-secret-key \
+  pdf-translator python -m uvicorn app.main_new:app --host 0.0.0.0 --port 8000
 ```
 
 ## ✨ 主要功能
