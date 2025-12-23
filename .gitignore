@@ -34,7 +34,4 @@ ENV/
 
 # Project specific - Data directories
 /data/
-
-# Project specific - Other
-pdf2zh_files/
 .env

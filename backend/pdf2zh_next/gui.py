@@ -1131,7 +1131,7 @@ async def translate_files(
         state["parent_map"] = {}
 
     # Prepare output directory
-    output_dir = Path("pdf2zh_files") / session_id
+    output_dir = Path("data") / "webui" / session_id
     output_dir.mkdir(parents=True, exist_ok=True)
 
     zip_path = output_dir / "all_translations.zip"
@@ -1583,8 +1583,8 @@ def save_config(
     # Track progress
     progress(0, desc=_("Saving configuration..."))
 
-    # Prepare output directory
-    output_dir = Path("pdf2zh_files")
+    # Prepare output directory (WebUI isolated data)
+    output_dir = Path("data") / "webui"
 
     _build_translate_settings(
         settings.clone(), config_fake_pdf_path, output_dir, SaveMode.always, ui_inputs

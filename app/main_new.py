@@ -28,9 +28,13 @@ app.add_middleware(
 # Store tasks in memory
 TASKS = {}
 DATA_DIR = Path("data")
-UPLOAD_DIR = DATA_DIR / "uploads"
-OUTPUT_DIR = DATA_DIR / "outputs"
+API_DATA_DIR = DATA_DIR / "api"
+UPLOAD_DIR = API_DATA_DIR / "uploads"
+OUTPUT_DIR = API_DATA_DIR / "outputs"
+
+# Ensure directories exist
 DATA_DIR.mkdir(exist_ok=True)
+API_DATA_DIR.mkdir(exist_ok=True)
 UPLOAD_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 
