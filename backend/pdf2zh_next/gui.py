@@ -1610,133 +1610,91 @@ custom_blue = gr.themes.Color(
 )
 
 custom_css = """
-    .secondary-text {color: rgba(255, 255, 255, 0.7) !important; font-size: 0.9em;}
-    footer {visibility: hidden}
-    .env-warning {color: #ffaa00 !important;}
-    .env-success {color: #00ffaa !important;}
-
-    /* Premium Font System */
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+    /* Global Reset & Font */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap');
     
     body, .gradio-container {
-        font-family: 'Outfit', sans-serif !important;
-        background: radial-gradient(circle at top right, #1a1a2e, #16213e) fixed !important;
-        color: #ffffff !important;
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        background-color: #f8fafc !important; /* Slate 50 */
+        color: #0f172a !important; /* Slate 900 */
     }
 
-    /* Glassmorphism Cards */
-    .gradio-container .gr-block, .gradio-container .gr-form {
-        background: rgba(255, 255, 255, 0.05) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 20px !important;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
-        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-    }
-
-    .gradio-container .gr-block:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    }
-
-    /* Enhanced File Upload Area (Glow effect) */
-    .input-file {
-        border: 2px dashed rgba(22, 93, 255, 0.5) !important;
-        border-radius: 16px !important;
-        background: rgba(22, 93, 255, 0.08) !important;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    }
-    .input-file:hover {
-        background: rgba(22, 93, 255, 0.15) !important;
-        border-color: #4080FF !important;
-        box-shadow: 0 0 20px rgba(22, 93, 255, 0.4) !important;
-        transform: scale(1.01) !important;
-    }
-
-    /* Colorful Gradient Buttons */
+    /* Buttons - Gradient Brand Color */
     .gr-button-primary {
-        background: linear-gradient(135deg, #165DFF 0%, #4080FF 50%, #8E2DE2 100%) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important; 
         border: none !important;
-        border-radius: 12px !important;
         color: white !important;
-        font-weight: 600 !important;
-        box-shadow: 0 10px 20px -10px rgba(22, 93, 255, 0.5) !important;
-        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
     }
     .gr-button-primary:hover {
-        transform: translateY(-2px) scale(1.02) !important;
-        box-shadow: 0 20px 30px -10px rgba(22, 93, 255, 0.6) !important;
-        background: linear-gradient(135deg, #4080FF 0%, #8E2DE2 100%) !important;
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
+        transform: translateY(-1px) !important;
     }
 
-    /* Input focus styling */
-    /* Fixed Text Visibility */
-    .gradio-container label, .gradio-container span, .gradio-container p, .gradio-container h1, .gradio-container h2, .gradio-container h3, .gradio-container h4 {
-        color: #f0f0f0 !important;
-    }
-    
-    .gradio-container .prose * {
-        color: #f0f0f0 !important;
+    /* Cards & Blocks - Clean White */
+    .gradio-container .gr-block, .gradio-container .gr-form {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important; /* Slate 200 */
+        border-radius: 16px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }
 
-    /* Unified Input Styling - Dark Glass */
-    .gradio-container input, .gradio-container textarea, .gradio-container select, .gradio-container .gr-input {
-        background: rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        color: white !important;
+    /* Inputs - Soft Gray Background */
+    .gradio-container input, .gradio-container textarea, .gradio-container select, .gradio-container .gr-input, .gradio-container .gr-dropdown .wrap-inner {
+        background-color: #f1f5f9 !important; /* Slate 100 */
+        border: 1px solid #cbd5e1 !important; /* Slate 300 */
+        color: #1e293b !important; /* Slate 800 */
         border-radius: 8px !important;
     }
     
     .gradio-container input:focus, .gradio-container textarea:focus, .gradio-container select:focus {
-        border-color: #4080FF !important;
-        background: rgba(0, 0, 0, 0.45) !important;
-        box-shadow: 0 0 10px rgba(64, 128, 255, 0.2) !important;
+        background-color: #ffffff !important;
+        border-color: #6366f1 !important; /* Indigo 500 */
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
     }
 
-    /* Dropdown specific fixes */
-    .gradio-container .gr-dropdown .wrap-inner {
-        background: rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        border-radius: 8px !important;
+    /* File Upload Area */
+    .input-file {
+        background-color: #f8fafc !important;
+        border: 2px dashed #94a3b8 !important; /* Slate 400 */
+        border-radius: 12px !important;
+    }
+    .input-file:hover {
+        background-color: #eff6ff !important; /* Blue 50 */
+        border-color: #6366f1 !important;
+    }
+
+    /* Text Visibility Config */
+    .gradio-container label, .gradio-container span.label-wrap {
+        color: #475569 !important; /* Slate 600 */
+        font-weight: 500 !important;
     }
     
+    .gradio-container h1, .gradio-container h2, .gradio-container h3 {
+        color: #0f172a !important;
+    }
+    
+    .gradio-container .prose p {
+        color: #334155 !important;
+    }
+
+    /* Dropdown Menu Items */
     .gradio-container .gr-dropdown .selector-item {
-        color: #333 !important; /* Dropdown items need to be readable on their light bg usually default in gradio, or we enforce dark */
+        color: #1e293b !important;
     }
     
-    /* Force dark dropdown menu if possible, otherwise keep text dark for contrast if menu is light */
-    /* Gradio unfortunately handles dropdown options via portal often outside styling scope easily. 
-       Let's stick to making the input box itself harmonious. */
-
-    .gradio-container .gr-radio, .gradio-container .gr-checkbox {
-         background: transparent !important;
-    }
-
-    .progress-bar-wrap {
-        border-radius: 10px !important;
-        height: 12px !important;
-        background: rgba(255, 255, 255, 0.1) !important;
-    }
-
+    /* Progress Bar */
     .progress-bar {
-        border-radius: 10px !important;
-        background: linear-gradient(90deg, #165DFF, #8E2DE2, #4080FF) !important;
-        background-size: 200% auto !important;
-        animation: gradient-flow 2s linear infinite !important;
+        background: linear-gradient(90deg, #4f46e5, #9333ea) !important;
     }
 
-    @keyframes gradient-flow {
-        0% { background-position: 0% 50%; }
-        100% { background-position: 200% 50%; }
-    }
-
+    /* Footer Cleanup */
+    footer {visibility: hidden}
+    
+    /* PDF Canvas */
     .pdf-canvas canvas {
-        width: 100%;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid #e2e8f0 !important;
     }
     """
 
