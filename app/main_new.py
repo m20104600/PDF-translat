@@ -27,8 +27,10 @@ app.add_middleware(
 
 # Store tasks in memory
 TASKS = {}
-UPLOAD_DIR = Path("uploads")
-OUTPUT_DIR = Path("outputs")
+DATA_DIR = Path("data")
+UPLOAD_DIR = DATA_DIR / "uploads"
+OUTPUT_DIR = DATA_DIR / "outputs"
+DATA_DIR.mkdir(exist_ok=True)
 UPLOAD_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 

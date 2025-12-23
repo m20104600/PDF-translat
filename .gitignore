@@ -32,8 +32,9 @@ ENV/
 *.swp
 *.swo
 
-# Project specific
-outputs/
-uploads/
+# Project specific - Data directories
+/data/
+
+# Project specific - Other
 pdf2zh_files/
 .env
