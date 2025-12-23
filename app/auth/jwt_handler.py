@@ -55,3 +55,60 @@ def decode_token(token: str) -> Optional[dict]:
         return None
     except jwt.InvalidTokenError:
         return None
+
+
+# Session persistence
+from pathlib import Path
+import json
+
+SESSION_DIR = Path("data") / "sessions"
+SESSION_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def save_session(user_id: int, refresh_token: str) -> None:
+    """Save user session for persistence."""
+    session_file = SESSION_DIR / f"{user_id}.json"
+    session_data = {
+        "user_id": user_id,
+        "refresh_token": refresh_token,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    with open(session_file, "w") as f:
+        json.dump(session_data, f)
+
+
+def load_session(user_id: int) -> Optional[str]:
+    """Load user session refresh token."""
+    session_file = SESSION_DIR / f"{user_id}.json"
+    if not session_file.exists():
+        return None
+    try:
+        with open(session_file, "r") as f:
+            data = json.load(f)
+            return data.get("refresh_token")
+    except (json.JSONDecodeError, IOError):
+        return None
+
+
+def clear_session(user_id: int) -> None:
+    """Clear user session."""
+    session_file = SESSION_DIR / f"{user_id}.json"
+    if session_file.exists():
+        session_file.unlink()
+
+
+def cleanup_expired_sessions() -> int:
+    """Clean up expired session files. Returns count of removed sessions."""
+    removed = 0
+    for session_file in SESSION_DIR.glob("*.json"):
+        try:
+            with open(session_file, "r") as f:
+                data = json.load(f)
+            token = data.get("refresh_token")
+            if token and decode_token(token) is None:
+                session_file.unlink()
+                removed += 1
+        except (json.JSONDecodeError, IOError):
+            session_file.unlink()
+            removed += 1
+    return removed

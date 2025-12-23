@@ -147,3 +147,79 @@ def delete_all_user_files(
     db.commit()
     
     return {"message": f"Deleted {len(records)} records"}
+
+
+@router.get("/download/{file_id}/mono")
+def download_mono(
+    file_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Download mono (translated only) version of a file."""
+    record = db.query(TranslationHistory).filter(
+        TranslationHistory.id == file_id
+    ).first()
+    
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found"
+        )
+    
+    # Check permission
+    if record.user_id != user.id and not user.is_admin():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    if not record.mono_path or not Path(record.mono_path).exists():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Mono file not found"
+        )
+    
+    from fastapi.responses import FileResponse
+    return FileResponse(
+        record.mono_path,
+        media_type="application/pdf",
+        filename=f"{Path(record.filename).stem}_mono.pdf"
+    )
+
+
+@router.get("/download/{file_id}/dual")
+def download_dual(
+    file_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Download dual (bilingual) version of a file."""
+    record = db.query(TranslationHistory).filter(
+        TranslationHistory.id == file_id
+    ).first()
+    
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found"
+        )
+    
+    # Check permission
+    if record.user_id != user.id and not user.is_admin():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    if not record.dual_path or not Path(record.dual_path).exists():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dual file not found"
+        )
+    
+    from fastapi.responses import FileResponse
+    return FileResponse(
+        record.dual_path,
+        media_type="application/pdf",
+        filename=f"{Path(record.filename).stem}_dual.pdf"
+    )
