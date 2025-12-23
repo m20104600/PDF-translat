@@ -1682,6 +1682,20 @@ custom_css = """
     .gradio-container .gr-dropdown .selector-item {
         color: #1e293b !important;
     }
+
+    /* Active State Highlighting */
+    .gradio-container label:has(input:checked) {
+        background-color: #e0e7ff !important; /* Indigo 100 */
+        border: 1px solid #6366f1 !important; /* Indigo 500 */
+        color: #4338ca !important;
+        font-weight: 600 !important;
+    }
+    
+    .gradio-container input[type="radio"]:checked + span, 
+    .gradio-container input[type="checkbox"]:checked + span {
+        color: #4338ca !important;
+        font-weight: 600 !important;
+    }
     
     /* Progress Bar */
     .progress-bar {
