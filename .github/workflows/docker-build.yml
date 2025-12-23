@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # 允许手动触发
 
 env:
-  DOCKER_IMAGE: m20104600/pdf-translat
+  DOCKER_IMAGE: m20104600/pdf-translator
 
 jobs:
   build-and-push:

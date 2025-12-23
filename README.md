@@ -20,7 +20,7 @@
 ```yaml
 services:
   pdf-webui:
-    image: m20104600/pdf-translat:latest # 或者使用本地 build: .
+    image: m20104600/pdf-translator:latest # 或者使用本地 build: .
     container_name: pdf-translator-webui
     restart: always
     ports:
@@ -31,7 +31,7 @@ services:
       - 'PDF2ZH_UI_LANG=zh' # 界面语言
 
   pdf-api:
-    image: m20104600/pdf-translat:latest
+    image: m20104600/pdf-translator:latest
     container_name: pdf-translator-api
     restart: always
     ports:
