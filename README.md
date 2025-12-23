@@ -26,8 +26,8 @@ services:
     ports:
       - '7860:7860' # WebUI 访问端口
     volumes:
-      - './uploads:/app/uploads' # 上传文件目录
-      - './outputs:/app/outputs' # 翻译结果目录
+      - './data:/app/data' # 数据目录（包含uploads和outputs）
+      - '~/.config/pdf2zh:/root/.config/pdf2zh' # 配置目录
     environment:
       - 'PDF2ZH_UI_LANG=zh' # 界面语言
 
@@ -39,8 +39,8 @@ services:
       - '8000:8000' # API 访问端口
     command: ["python", "-m", "uvicorn", "app.main_new:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
-      - './uploads:/app/uploads'
-      - './outputs:/app/outputs'
+      - './data:/app/data'
+      - '~/.config/pdf2zh:/root/.config/pdf2zh'
 ```
 
 **常用管理命令：**
@@ -64,12 +64,12 @@ docker-compose down
 **启动官方 WebUI:**
 ```bash
 docker build -t pdf-translator .
-docker run -d -p 7860:7860 -v ${PWD}/uploads:/app/uploads -v ${PWD}/outputs:/app/outputs pdf-translator
+docker run -d -p 7860:7860 -v ${PWD}/data:/app/data -v ~/.config/pdf2zh:/root/.config/pdf2zh pdf-translator
 ```
 
 **启动自定义 API:**
 ```bash
-docker run -d -p 8000:8000 -v ${PWD}/uploads:/app/uploads -v ${PWD}/outputs:/app/outputs pdf-translator python -m uvicorn app.main_new:app --host 0.0.0.0 --port 8000
+docker run -d -p 8000:8000 -v ${PWD}/data:/app/data -v ~/.config/pdf2zh:/root/.config/pdf2zh pdf-translator python -m uvicorn app.main_new:app --host 0.0.0.0 --port 8000
 ```
 
 ## ✨ 主要功能
@@ -83,10 +83,12 @@ docker run -d -p 8000:8000 -v ${PWD}/uploads:/app/uploads -v ${PWD}/outputs:/app
 
 - `app/`: 包含自定义的 Python 逻辑和增强功能。
 - `backend/`: 核心翻译引擎代码。
+- `data/`: 数据目录（自动创建），包含：
+  - `data/uploads/`: 上传待翻译的文件存放处
+  - `data/outputs/`: 翻译生成的 PDF 文件将自动存放在此
 - `start.bat`: 官方 WebUI 启动入口。
 - `start_local.bat`: 定制后端服务启动入口。
-- `outputs/`: 翻译生成的 PDF 文件将自动存放在此。
-- `uploads/`: 上传待翻译的文件存放处。
+- `~/.config/pdf2zh/`: 配置文件目录（位于用户主目录）。
 
 ## 🛠️ 安装说明
 
@@ -125,4 +127,7 @@ pip install -e ./backend
 
 ---
 > [!TIP]
-> 您的上传文件 (`uploads/`) 和翻译结果 (`outputs/`) 均已在 `.gitignore` 中配置排除，不会被提交到公开仓库，保护您的隐私。
+> 您的数据目录 (`data/`) 已在 `.gitignore` 中配置排除，包含的上传文件和翻译结果不会被提交到公开仓库，保护您的隐私。
+> 
+> [!NOTE]
+> `data/` 目录及其子目录会在首次运行时自动创建，无需手动操作。
