@@ -1610,27 +1610,52 @@ custom_blue = gr.themes.Color(
 )
 
 custom_css = """
-    .secondary-text {color: #999 !important;}
+    .secondary-text {color: #888 !important; font-size: 0.9em;}
     footer {visibility: hidden}
     .env-warning {color: #dd5500 !important;}
     .env-success {color: #559900 !important;}
 
-    /* Add dashed border to input-file class */
+    /* Modern font system */
+    body, .gradio-container {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    /* Enhanced file upload area */
     .input-file {
-        border: 1.2px dashed #165DFF !important;
-        border-radius: 6px !important;
+        border: 2px dashed #165DFF !important;
+        border-radius: 12px !important;
+        background-color: #f8faff !important;
+        transition: all 0.3s ease !important;
+    }
+    .input-file:hover {
+        background-color: #f0f5ff !important;
+        border-color: #0E42D2 !important;
+    }
+
+    /* Buttons stylings */
+    .gr-button-primary {
+        box-shadow: 0 4px 6px -1px rgba(22, 93, 255, 0.2), 0 2px 4px -1px rgba(22, 93, 255, 0.1) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .gr-button-primary:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 10px 15px -3px rgba(22, 93, 255, 0.3) !important;
     }
 
     .progress-bar-wrap {
         border-radius: 8px !important;
+        height: 10px !important;
     }
 
     .progress-bar {
         border-radius: 8px !important;
+        background: linear-gradient(90deg, #165DFF, #4080FF) !important;
     }
 
     .pdf-canvas canvas {
         width: 100%;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border-radius: 4px;
     }
     """
 
@@ -1648,17 +1673,11 @@ if not config_fake_pdf_path.exists():
 
 
 tech_details_string = f"""
-                    <summary>Technical details</summary>
-                    - ⭐ Star at GitHub: <a href="https://github.com/PDFMathTranslate-next/PDFMathTranslate-next">PDFMathTranslate-next/PDFMathTranslate-next</a><br>
-                    - BabelDOC: <a href="https://github.com/funstory-ai/BabelDOC">funstory-ai/BabelDOC</a><br>
-                    - GUI by: <a href="https://github.com/reycn">Rongxin</a> & <a href="https://github.com/hellofinch">hellofinch</a> & <a href="https://github.com/awwaawwa">awwaawwa</a> & <a href="https://github.com/zfb132">zfb132</a><br>
-                    - pdf2zh Version: {__version__} <br>
-                    - BabelDOC Version: {babeldoc_version}<br>
-                    - Free translation service provided by <a href="https://siliconflow.cn/" target="_blank" style="text-decoration: none;">SiliconFlow</a><br>
-                    <a href="https://siliconflow.cn/" target="_blank" style="text-decoration: none;">
-                        <img src="/gradio_api/file={logo_path}" alt="Powered By SiliconFlow" style="height: 40px; margin-top: 10px;">
-                    </a>
-                    <br>
+                    <div style="text-align: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                        <p style="color: #666;">
+                            GitHub: <a href="https://github.com/m20104600/PDF-translat" target="_blank" style="color: #165DFF; text-decoration: none; font-weight: 500;">m20104600/PDF-translat</a>
+                        </p>
+                    </div>
                 """
 update_current_languages(settings.gui_settings.ui_lang)
 # The following code creates the GUI
@@ -1676,7 +1695,7 @@ with gr.Blocks(
         render=False,
     )
     with Translate(get_translation_dic(translation_file_path), lang_selector):
-        gr.Markdown("# [PDFMathTranslate Next](https://pdf2zh-next.com)")
+        gr.Markdown("# [PDF Translator](https://github.com/m20104600/PDF-translat)")
 
         translation_engine_arg_inputs = []
         detail_text_inputs = []
