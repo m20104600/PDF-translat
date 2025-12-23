@@ -19,6 +19,7 @@ from app.auth.database import init_db
 from app.auth.routes import router as auth_router
 from app.users.routes import router as users_router
 from app.files.routes import router as files_router
+from app.config.routes import router as config_router
 
 app = FastAPI(title="PDF Translator API", version="1.0.0")
 
@@ -196,6 +197,7 @@ async def get_source_pdf(task_id: str):
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(files_router)
+app.include_router(config_router)
 
 if __name__ == "__main__":
     import uvicorn
