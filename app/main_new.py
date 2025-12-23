@@ -14,7 +14,18 @@ from pdf2zh_next.high_level import do_translate_async_stream
 from pdf2zh_next.config.model import SettingsModel, BasicSettings, TranslationSettings, PDFSettings
 from pdf2zh_next.config.translate_engine_model import SiliconFlowFreeSettings
 
-app = FastAPI()
+# Import auth modules
+from app.auth.database import init_db
+from app.auth.routes import router as auth_router
+from app.users.routes import router as users_router
+from app.files.routes import router as files_router
+
+app = FastAPI(title="PDF Translator API", version="1.0.0")
+
+# Initialize database on startup
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 # Enable CORS for frontend
 app.add_middleware(
@@ -180,6 +191,11 @@ async def get_source_pdf(task_id: str):
         filename=task["file_name"],
         content_disposition_type="inline"
     )
+
+# Include auth routers
+app.include_router(auth_router)
+app.include_router(users_router)
+app.include_router(files_router)
 
 if __name__ == "__main__":
     import uvicorn
