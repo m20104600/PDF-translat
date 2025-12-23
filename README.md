@@ -15,12 +15,49 @@
 
 ### 方式一：使用 Docker Compose (推荐)
 
-一键启动 WebUI 和自定义 API：
-```bash
-docker-compose up -d
+一键启动 WebUI 和自定义 API 服务。您可以创建一个 `docker-compose.yml` 文件并粘贴以下内容：
+
+```yaml
+services:
+  pdf-webui:
+    image: m20104600/pdf-translat:latest # 或者使用本地 build: .
+    container_name: pdf-translator-webui
+    restart: always
+    ports:
+      - '7860:7860' # WebUI 访问端口
+    volumes:
+      - './uploads:/app/uploads' # 上传文件目录
+      - './outputs:/app/outputs' # 翻译结果目录
+    environment:
+      - 'PDF2ZH_UI_LANG=zh' # 界面语言
+
+  pdf-api:
+    image: m20104600/pdf-translat:latest
+    container_name: pdf-translator-api
+    restart: always
+    ports:
+      - '8000:8000' # API 访问端口
+    command: ["python", "-m", "uvicorn", "app.main_new:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - './uploads:/app/uploads'
+      - './outputs:/app/outputs'
 ```
-- **WebUI**: [http://localhost:7860](http://localhost:7860)
-- **API**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+**常用管理命令：**
+```bash
+# 启动所有服务 (后台运行)
+docker-compose up -d
+
+# 查看状态 / 日志
+docker-compose ps
+docker-compose logs -f
+
+# 停止容器
+docker-compose down
+```
+
+- **WebUI 访问地址**: [http://localhost:7860](http://localhost:7860)
+- **API 访问地址**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### 方式二：使用 Docker 命令
 
