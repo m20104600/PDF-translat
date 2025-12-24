@@ -76,8 +76,10 @@ docker run -d -p 8000:8000 \
 
 - **排版保留**：完美保留 PDF 原始布局、图片和复杂的数学公式。
 - **多语言支持**：支持翻译为中文（简体/繁体）以及多种全球主流语言。
-- **多引擎驱动**：支持接入多种主流 LLM API (如 OpenAI, SiliconFlow, Claude, Ollama, 阿里翻译等)。
+- **多引擎驱动**：支持接入多种主流 LLM API (如 OpenAI, SiliconFlow, Claude, Ollama, Google Gemini, DeepL, DeepSeek 等)。
 - **交互友好**：简单易用的 Web 界面，拖拽上传即可开始翻译。
+- **历史记录**：自动保存翻译历史，随时下载**单语**或**双语**版本译文。
+- **网络代理**：内置管理员专用的网络代理配置（支持 HTTP/HTTPS/SOCKS），轻松连接全球服务。
 
 ## 📂 项目结构
 
