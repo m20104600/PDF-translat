@@ -37,7 +37,6 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=1.0.${{ github.run_number }},enable=${{ github.ref == 'refs/heads/main' }}
             type=ref,event=tag
-            type=sha,prefix=sha-
 
       - name: Build and push
         uses: docker/build-push-action@v5
