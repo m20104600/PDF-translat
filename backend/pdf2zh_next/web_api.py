@@ -742,6 +742,68 @@ async def delete_history_item(task_id: str, current_user: dict = Depends(get_cur
     return {"success": True, "message": "History item deleted"}
 
 
+@app.delete("/api/translate/history/all")
+async def delete_all_history(current_user: dict = Depends(get_current_user)):
+    """Delete all history items for current user"""
+    user_dir = user_manager.get_user_dir(current_user['username'])
+    history_file = user_dir / "history.json"
+    outputs_dir = user_dir / "outputs"
+    uploads_dir = user_dir / "uploads"
+
+    deleted_count = 0
+
+    if history_file.exists():
+        history = json.loads(history_file.read_text())
+        deleted_count = len(history)
+
+        # Delete all output directories
+        if outputs_dir.exists():
+            for task_dir in outputs_dir.iterdir():
+                if task_dir.is_dir():
+                    shutil.rmtree(task_dir)
+                    logger.info(f"Deleted output directory: {task_dir}")
+
+        # Delete all uploaded files
+        if uploads_dir.exists():
+            for upload_file in uploads_dir.iterdir():
+                if upload_file.is_file():
+                    upload_file.unlink()
+                    logger.info(f"Deleted uploaded file: {upload_file}")
+
+        # Clear history
+        history_file.write_text("[]")
+
+    return {"success": True, "message": f"Deleted {deleted_count} history items"}
+
+
+@app.get("/api/admin/history")
+async def get_all_users_history(admin_user: dict = Depends(get_admin_user)):
+    """Get translation history for all users (admin only)"""
+    all_history = []
+    users_dir = Path("data/users")
+
+    if users_dir.exists():
+        for user_dir in users_dir.iterdir():
+            if user_dir.is_dir():
+                username = user_dir.name
+                history_file = user_dir / "history.json"
+
+                if history_file.exists():
+                    try:
+                        user_history = json.loads(history_file.read_text())
+                        # Add username to each history entry
+                        for item in user_history:
+                            item['username'] = username
+                        all_history.extend(user_history)
+                    except Exception as e:
+                        logger.warning(f"Failed to read history for {username}: {e}")
+
+    # Sort by created_at descending
+    all_history.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+
+    return {"success": True, "history": all_history}
+
+
 @app.get("/api/translate/download/{task_id}")
 async def download_translation(
     task_id: str,
