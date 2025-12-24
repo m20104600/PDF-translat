@@ -219,6 +219,12 @@ async def login(request: LoginRequest):
     }
 
 
+@app.get("/api/auth/me")
+async def get_current_user_info(current_user: dict = Depends(get_current_user)):
+    """Get current user info"""
+    return current_user
+
+
 @app.post("/api/auth/logout")
 async def logout(current_user: dict = Depends(get_current_user), authorization: str = Header(None)):
     """Logout current user"""
