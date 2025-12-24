@@ -16,14 +16,14 @@
         /* 页面特定样式 */
         .page-layout {
             display: grid;
-            grid-template-columns: 6.5fr 3.5fr;
+            grid-template-columns: 1fr 1fr;
             gap: 32px;
             padding: 32px;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 900px) {
             .page-layout {
                 grid-template-columns: 1fr;
             }
@@ -279,494 +279,295 @@
         <a href="/static/upload.html" class="header-logo">PDF 翻译器</a>
         <nav class="header-nav">
             <a href="/static/upload.html" class="active">翻译</a>
+            <a href="/static/dashboard.html" id="navDashboard" style="display:none;">仪表盘</a>
             <a href="/static/settings.html">设置</a>
             <span class="user-badge" id="userBadge"></span>
             <a href="#" id="logoutBtn">退出</a>
         </nav>
     </header>
 
-    <div class="mobile-header"
-        style="display:none; position:fixed; top:0; left:0; right:0; height:50px; background:var(--bg-card); border-bottom:1px solid var(--border-color); z-index:90; align-items:center; padding:0 16px; justify-content:space-between;">
-        <div style="display:flex;align-items:center;">
-            <button onclick="document.querySelector('.sidebar').classList.toggle('show')"
-                style="background:none;border:none;color:white;font-size:24px;margin-right:12px;">☰</button>
-            <span class="logo-text" style="font-size:16px;">PDF 翻译器</span>
-        </div>
-        <div id="mobileUserDisplay" style="font-size:12px;color:var(--text-secondary);"></div>
-    </div>
+    <main class="page-layout">
+        <!-- 左侧：上传区域 -->
+        <div class="left-section">
+            <h2 class="section-title">上传PDF</h2>
+            <p class="section-subtitle">上传文件或输入URL进行翻译</p>
 
-    <!-- 侧边栏 -->
-    <div class="sidebar">
-        <div class="logo">
-            <span class="logo-icon">📄</span>
-            <span class="logo-text">PDF 翻译器</span>
-        </div>
+            <!-- 文件上传区 -->
+            <div class="upload-box" id="uploadBox">
+                <div class="pdf-icon">📄</div>
+                <div class="file-name-display" id="fileNameDisplay">点击选择或拖拽PDF文件</div>
+                <div class="file-meta" id="fileMeta">支持 PDF 格式，最大 50MB</div>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+            </div>
 
-        <a href="#" class="nav-item active">
-            <span class="nav-icon">🚀</span>
-            开始翻译
-        </a>
-        <a href="/static/dashboard.html" class="nav-item" id="navDashboard" style="display: none;">
-            <span class="nav-icon">📊</span>
-            仪表盘
-        </a>
-        <main class="page-layout">
-            <!-- 左侧：上传区域 -->
-            <div class="left-section">
-                <h2 class="section-title">上传PDF</h2>
-                <p class="section-subtitle">上传文件或输入URL进行翻译</p>
+            <div class="divider">— 或者 —</div>
 
-                <!-- 文件上传区 -->
-                <div class="upload-box" id="uploadBox">
-                    <div class="pdf-icon">📄</div>
-                    <div class="file-name-display" id="fileNameDisplay">点击选择或拖拽PDF文件</div>
-                    <div class="file-meta" id="fileMeta">支持 PDF 格式，最大 50MB</div>
-                    <input type="file" id="fileInput" accept=".pdf" style="display: none;">
-                </div>
+            <!-- URL 输入 -->
+            <div class="form-group">
+                <label>PDF URL</label>
+                <input type="url" id="pdfUrl" class="form-input" placeholder="https://example.com/document.pdf">
+            </div>
 
-                <div class="divider">— 或者 —</div>
+            <!-- 翻译页面选择 -->
+            <div class="form-group">
+                <label>翻译页面</label>
+                <select id="pageRange" class="form-select">
+                    <option value="all">全部页面</option>
+                    <option value="5">前 5 页</option>
+                    <option value="10">前 10 页</option>
+                    <option value="20">前 20 页</option>
+                </select>
+            </div>
 
-                <!-- URL 输入 -->
+            <!-- 语言设置 -->
+            <div class="grid grid-2" style="margin-top: 16px;">
                 <div class="form-group">
-                    <label>PDF URL</label>
-                    <input type="url" id="pdfUrl" class="form-input" placeholder="https://example.com/document.pdf">
-                </div>
-
-                <!-- 翻译页面选择 -->
-                <div class="form-group">
-                    <label>翻译页面</label>
-                    <select id="pageRange" class="form-select">
-                        <option value="all">全部页面</option>
-                        <option value="5">前 5 页</option>
-                        <option value="10">前 10 页</option>
-                        <option value="20">前 20 页</option>
+                    <label>源语言</label>
+                    <select id="langFrom" class="form-select">
+                        <option value="English">英语</option>
+                        <option value="Chinese">中文</option>
+                        <option value="Japanese">日语</option>
+                        <option value="Korean">韩语</option>
+                        <option value="French">法语</option>
+                        <option value="German">德语</option>
                     </select>
                 </div>
-
-                <!-- 语言设置 -->
-                <div class="grid grid-2" style="margin-top: 16px;">
-                    <div class="form-group">
-                        <label>源语言</label>
-                        <select id="langFrom" class="form-select">
-                            <option value="English">英语</option>
-                            <option value="Chinese">中文</option>
-                            <option value="Japanese">日语</option>
-                            <option value="Korean">韩语</option>
-                            <option value="French">法语</option>
-                            <option value="German">德语</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>目标语言</label>
-                        <select id="langTo" class="form-select">
-                            <option value="Simplified Chinese">简体中文</option>
-                            <option value="Traditional Chinese">繁体中文</option>
-                            <option value="English">英语</option>
-                            <option value="Japanese">日语</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- 开始翻译按钮 -->
-                <button class="btn btn-primary" id="translateBtn" disabled style="margin-top: 20px; width: 100%;">
-                    🚀 开始翻译
-                </button>
-
-                <!-- 进度显示 -->
-                <div id="progressSection" style="display: none; margin-top: 20px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>翻译进度</span>
-                        <span id="progressText">0.00%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                    </div>
+                <div class="form-group">
+                    <label>目标语言</label>
+                    <select id="langTo" class="form-select">
+                        <option value="Simplified Chinese">简体中文</option>
+                        <option value="Traditional Chinese">繁体中文</option>
+                        <option value="English">英语</option>
+                        <option value="Japanese">日语</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- 右侧：翻译完成与历史 -->
-            <div class="right-section">
-                <h2 class="section-title">翻译状态</h2>
-                <p class="section-subtitle">查看进度或最近记录</p>
+            <!-- 开始翻译按钮 -->
+            <button class="btn btn-primary" id="translateBtn" disabled style="margin-top: 20px; width: 100%;">
+                🚀 开始翻译
+            </button>
 
-                <!-- 翻译完成 (由于排版需求移动到此处) -->
-                <div class="result-section" id="resultSection"
-                    style="margin-top: 0; margin-bottom: 24px; padding: 20px;">
-                    <div class="result-title">🎉 翻译完成！</div>
-                    <div class="result-buttons">
-                        <button class="btn-download" id="downloadMonoBtn">📥 下载译文</button>
-                        <button class="btn-download dual" id="downloadDualBtn">📥 下载双语版</button>
-                    </div>
-                    <button class="btn-new" id="newTranslateBtn" style="margin-top: 16px; width: 100%;">开始新翻译</button>
+            <!-- 进度显示 -->
+            <div id="progressSection" style="display: none; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>翻译进度</span>
+                    <span id="progressText">0.00%</span>
                 </div>
-
-                <div id="historyList">
-                    <!-- 动态生成 -->
-                </div>
-
-                <div id="historyEmpty" style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                    暂无翻译记录
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                 </div>
             </div>
-        </main>
+        </div>
 
-        <script>
-            // 认证检查
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/static/login.html';
-            }
+        <!-- 右侧：翻译完成与历史 -->
+        <div class="right-section">
+            <h2 class="section-title">翻译状态</h2>
+            <p class="section-subtitle">查看进度或最近记录</p>
 
-            // 显示用户信息
-            const username = localStorage.getItem('username');
-            const isAdmin = localStorage.getItem('is_admin') === 'true';
-            const userBadge = document.getElementById('userBadge');
-            userBadge.textContent = username;
-            if (isAdmin) userBadge.classList.add('admin');
+            <!-- 翻译完成 (由于排版需求移动到此处) -->
+            <div class="result-section" id="resultSection" style="margin-top: 0; margin-bottom: 24px; padding: 20px;">
+                <div class="result-title">🎉 翻译完成！</div>
+                <div class="result-buttons">
+                    <button class="btn-download" id="downloadMonoBtn">📥 下载译文</button>
+                    <button class="btn-download dual" id="downloadDualBtn">📥 下载双语版</button>
+                </div>
+                <button class="btn-new" id="newTranslateBtn" style="margin-top: 16px; width: 100%;">开始新翻译</button>
+            </div>
 
-            // API 辅助函数
-            async function api(endpoint, options = {}) {
-                try {
-                    // 确保使用绝对路径，避免在不同页面深度下请求出错
-                    const url = endpoint.startsWith('http') ? endpoint : endpoint;
+            <div id="historyList">
+                <!-- 动态生成 -->
+            </div>
 
-                    const res = await fetch(url, {
-                        ...options,
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            ...(options.headers || {})
-                        }
-                    });
+            <div id="historyEmpty" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                暂无翻译记录
+            </div>
+        </div>
+    </main>
 
-                    if (res.status === 401) {
-                        localStorage.clear();
-                        window.location.href = '/static/login.html';
-                        return;
+    <script>
+        // 认证检查
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/static/login.html';
+        }
+
+        // 显示用户信息
+        const username = localStorage.getItem('username');
+        const isAdmin = localStorage.getItem('is_admin') === 'true';
+        const userBadge = document.getElementById('userBadge');
+        userBadge.textContent = username;
+        if (isAdmin) userBadge.classList.add('admin');
+
+        // API 辅助函数
+        async function api(endpoint, options = {}) {
+            try {
+                // 确保使用绝对路径，避免在不同页面深度下请求出错
+                const url = endpoint.startsWith('http') ? endpoint : endpoint;
+
+                const res = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        ...(options.headers || {})
                     }
-                    return res;
-                } catch (error) {
-                    console.error('API Request Error:', error);
-                    throw new Error('网络连接失败，请检查服务器是否已启动');
-                }
-            }
+                });
 
-            // 退出登录
-            document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-                e.preventDefault();
-                try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { }
-                localStorage.clear();
-                window.location.href = '/static/login.html';
-            });
-
-            // 文件上传
-            let currentFile = null;
-            let currentFileName = null;
-            let currentFileId = null;
-            let currentTaskId = null;
-
-            const uploadBox = document.getElementById('uploadBox');
-            const fileInput = document.getElementById('fileInput');
-            const translateBtn = document.getElementById('translateBtn');
-
-            uploadBox.addEventListener('click', () => fileInput.click());
-
-            uploadBox.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadBox.style.borderColor = 'var(--accent-primary)';
-            });
-
-            uploadBox.addEventListener('dragleave', () => {
-                uploadBox.style.borderColor = currentFile ? 'var(--success)' : 'var(--border-color)';
-            });
-
-            uploadBox.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
-            });
-
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files.length > 0) handleFile(fileInput.files[0]);
-            });
-
-            async function handleFile(file) {
-                if (!file.name.toLowerCase().endsWith('.pdf')) {
-                    alert('请选择PDF文件');
+                if (res.status === 401) {
+                    localStorage.clear();
+                    window.location.href = '/static/login.html';
                     return;
                 }
+                return res;
+            } catch (error) {
+                console.error('API Request Error:', error);
+                throw new Error('网络连接失败，请检查服务器是否已启动');
+            }
+        }
 
-                currentFile = file;
-                currentFileName = file.name;
-                document.getElementById('fileNameDisplay').textContent = file.name;
-                document.getElementById('fileMeta').textContent = formatFileSize(file.size) + ' - 点击更换';
-                uploadBox.classList.add('has-file');
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { }
+            localStorage.clear();
+            window.location.href = '/static/login.html';
+        });
 
-                // 上传文件
-                const formData = new FormData();
-                formData.append('file', file);
+        // 文件上传
+        let currentFile = null;
+        let currentFileName = null;
+        let currentFileId = null;
+        let currentTaskId = null;
 
-                try {
-                    const res = await api('/api/translate/upload', { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (data.success) {
-                        currentFileId = data.file_id;
-                        translateBtn.disabled = false;
-                    } else {
-                        throw new Error(data.detail || '上传失败');
-                    }
-                } catch (e) {
-                    alert('上传失败: ' + e.message);
-                    resetUpload();
-                }
+        const uploadBox = document.getElementById('uploadBox');
+        const fileInput = document.getElementById('fileInput');
+        const translateBtn = document.getElementById('translateBtn');
+
+        uploadBox.addEventListener('click', () => fileInput.click());
+
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = 'var(--accent-primary)';
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.style.borderColor = currentFile ? 'var(--success)' : 'var(--border-color)';
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) handleFile(fileInput.files[0]);
+        });
+
+        async function handleFile(file) {
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                alert('请选择PDF文件');
+                return;
             }
 
-            function resetUpload() {
-                currentFile = null;
-                currentFileId = null;
-                currentTaskId = null;
-                currentFileName = null;
-                localStorage.removeItem('currentTaskId');
-                localStorage.removeItem('currentFileName');
-                localStorage.removeItem('currentFileSize');
-                localStorage.removeItem('currentFileId');
-                fileInput.value = '';
-                document.getElementById('fileNameDisplay').textContent = '点击选择或拖拽PDF文件';
-                document.getElementById('fileMeta').textContent = '支持 PDF 格式，最大 50MB';
-                uploadBox.classList.remove('has-file');
-                translateBtn.disabled = true;
-                document.getElementById('resultSection').classList.remove('show');
-                document.getElementById('progressSection').style.display = 'none';
-            }
+            currentFile = file;
+            currentFileName = file.name;
+            document.getElementById('fileNameDisplay').textContent = file.name;
+            document.getElementById('fileMeta').textContent = formatFileSize(file.size) + ' - 点击更换';
+            uploadBox.classList.add('has-file');
 
-            function formatFileSize(bytes) {
-                if (bytes < 1024) return bytes + ' B';
-                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-                return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-            }
+            // 上传文件
+            const formData = new FormData();
+            formData.append('file', file);
 
-            // 开始翻译
-            translateBtn.addEventListener('click', async () => {
-                if (!currentFileId) return;
-
-                const langFrom = document.getElementById('langFrom').value;
-                const langTo = document.getElementById('langTo').value;
-
-                translateBtn.disabled = true;
-                translateBtn.textContent = '正在翻译...';
-                document.getElementById('progressSection').style.display = 'block';
-                document.getElementById('resultSection').classList.remove('show');
-
-                try {
-                    const res = await api('/api/translate/start', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ file_id: currentFileId, lang_from: langFrom, lang_to: langTo })
-                    });
-
-                    const data = await res.json();
-                    if (data.success) {
-                        currentTaskId = data.task_id;
-                        localStorage.setItem('currentTaskId', currentTaskId);
-                        localStorage.setItem('currentFileName', currentFileName);
-                        localStorage.setItem('currentFileSize', document.getElementById('fileMeta').textContent);
-                        localStorage.setItem('currentFileId', currentFileId);
-                        pollProgress();
-                    } else {
-                        throw new Error(data.detail || '启动失败');
-                    }
-                } catch (e) {
-                    alert('错误: ' + e.message);
+            try {
+                const res = await api('/api/translate/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    currentFileId = data.file_id;
                     translateBtn.disabled = false;
-                    translateBtn.textContent = '🚀 开始翻译';
+                } else {
+                    throw new Error(data.detail || '上传失败');
                 }
-            });
+            } catch (e) {
+                alert('上传失败: ' + e.message);
+                resetUpload();
+            }
+        }
 
-            // Initialize
-            async function init() {
-                if (!checkAuth()) return;
-                loadHistory();
+        function resetUpload() {
+            currentFile = null;
+            currentFileId = null;
+            currentTaskId = null;
+            currentFileName = null;
+            localStorage.removeItem('currentTaskId');
+            localStorage.removeItem('currentFileName');
+            localStorage.removeItem('currentFileSize');
+            localStorage.removeItem('currentFileId');
+            fileInput.value = '';
+            document.getElementById('fileNameDisplay').textContent = '点击选择或拖拽PDF文件';
+            document.getElementById('fileMeta').textContent = '支持 PDF 格式，最大 50MB';
+            uploadBox.classList.remove('has-file');
+            translateBtn.disabled = true;
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('progressSection').style.display = 'none';
+        }
 
-                // Show Dashboard if admin
-                const isAdmin = localStorage.getItem('is_admin'); // Note: it might be boolean or string depending on storage
-                if (isAdmin === 'true' || isAdmin === true) {
-                    const navDash = document.getElementById('navDashboard');
-                    if (navDash) navDash.style.display = 'flex';
-                }
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
 
-                // Check for saved state
-                const savedTaskId = localStorage.getItem('currentTaskId');
-                if (savedTaskId) {
-                    currentTaskId = savedTaskId;
+        // 开始翻译
+        translateBtn.addEventListener('click', async () => {
+            if (!currentFileId) return;
 
-                    // 恢复文件信息显示
-                    const savedName = localStorage.getItem('currentFileName');
-                    const savedSize = localStorage.getItem('currentFileSize');
-                    const savedFileId = localStorage.getItem('currentFileId');
+            const langFrom = document.getElementById('langFrom').value;
+            const langTo = document.getElementById('langTo').value;
 
-                    if (savedName) {
-                        document.getElementById('fileNameDisplay').textContent = savedName;
-                        document.getElementById('fileMeta').textContent = savedSize || '恢复的文件';
-                        uploadBox.classList.add('has-file');
-                        currentFileName = savedName;
-                        currentFileId = savedFileId;
-                    }
+            translateBtn.disabled = true;
+            translateBtn.textContent = '正在翻译...';
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('resultSection').classList.remove('show');
 
-                    document.getElementById('progressSection').style.display = 'block';
-                    translateBtn.disabled = true;
-                    translateBtn.textContent = '正在翻译...';
+            try {
+                const res = await api('/api/translate/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_id: currentFileId, lang_from: langFrom, lang_to: langTo })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    currentTaskId = data.task_id;
+                    localStorage.setItem('currentTaskId', currentTaskId);
+                    localStorage.setItem('currentFileName', currentFileName);
+                    localStorage.setItem('currentFileSize', document.getElementById('fileMeta').textContent);
+                    localStorage.setItem('currentFileId', currentFileId);
                     pollProgress();
+                } else {
+                    throw new Error(data.detail || '启动失败');
                 }
-            }
-
-            // 轮询进度
-            async function pollProgress() {
-                if (!currentTaskId) return;
-
-                try {
-                    const res = await api(`/api/translate/status/${currentTaskId}`);
-                    const data = await res.json();
-
-                    if (data.success) {
-                        const progress = parseFloat(data.progress || 0);
-                        document.getElementById('progressFill').style.width = `${progress}%`;
-                        document.getElementById('progressText').textContent = `${progress.toFixed(2)}%`;
-
-                        if (data.status === 'completed') {
-                            localStorage.removeItem('currentTaskId');
-                            localStorage.removeItem('currentFileName');
-                            localStorage.removeItem('currentFileSize');
-                            localStorage.removeItem('currentFileId');
-                            showResult(data.output_files);
-                            loadHistory();
-                            return;
-                        } else if (data.status === 'failed') {
-                            localStorage.removeItem('currentTaskId');
-                            localStorage.removeItem('currentFileName');
-                            localStorage.removeItem('currentFileSize');
-                            localStorage.removeItem('currentFileId');
-                            alert('翻译失败: ' + (data.error || '未知错误'));
-                            translateBtn.disabled = false;
-                            translateBtn.textContent = '🚀 开始翻译';
-                            return;
-                        }
-
-                        setTimeout(pollProgress, 2000);
-                    }
-                } catch (e) {
-                    setTimeout(pollProgress, 3000);
-                }
-            }
-
-            function showResult(outputFiles) {
-                document.getElementById('progressSection').style.display = 'none';
-                document.getElementById('resultSection').classList.add('show');
+            } catch (e) {
+                alert('错误: ' + e.message);
                 translateBtn.disabled = false;
                 translateBtn.textContent = '🚀 开始翻译';
-
-                document.getElementById('downloadMonoBtn').onclick = () => {
-                    downloadFile(`/api/translate/download/${currentTaskId}?file_type=mono`);
-                };
-                document.getElementById('downloadDualBtn').onclick = () => {
-                    downloadFile(`/api/translate/download/${currentTaskId}?file_type=dual`);
-                };
             }
+        });
 
-            async function downloadFile(url) {
-                try {
-                    const res = await api(url);
-                    if (!res.ok) throw new Error('下载失败');
-
-                    const blob = await res.blob();
-                    const contentDisp = res.headers.get('Content-Disposition');
-                    let filename = 'translated.pdf';
-                    if (contentDisp && contentDisp.indexOf('filename=') !== -1) {
-                        filename = contentDisp.split('filename=')[1].replace(/["]/g, '');
-                        filename = decodeURIComponent(filename);
-                    }
-
-                    const downloadUrl = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = downloadUrl;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    window.URL.revokeObjectURL(downloadUrl);
-                } catch (e) {
-                    alert('下载出错: ' + e.message);
-                }
-            }
-
-            document.getElementById('newTranslateBtn').addEventListener('click', resetUpload);
-
-            // 加载历史记录
-            async function loadHistory() {
-                try {
-                    const res = await api('/api/translate/history');
-                    const data = await res.json();
-
-                    const listEl = document.getElementById('historyList');
-                    const emptyEl = document.getElementById('historyEmpty');
-
-                    if (!data.history || data.history.length === 0) {
-                        listEl.innerHTML = '';
-                        emptyEl.style.display = 'block';
-                        return;
-                    }
-
-                    emptyEl.style.display = 'none';
-                    listEl.innerHTML = data.history.map(item => `
-                    <div class="history-item">
-                        <div class="history-item-info">
-                            <div class="history-item-title">${escapeHtml(item.original_filename?.replace(/^[a-f0-9-]+_/i, '') || '未知文件')}</div>
-                            <div class="history-item-date">${formatDate(item.created_at)}</div>
-                        </div>
-                        <div class="history-item-actions">
-                            <button class="icon-btn success" onclick="downloadFile('/api/translate/download/${item.task_id}?file_type=mono')" title="下载译文 (单语)" style="font-weight:bold;font-size:13px;width:32px;">A</button>
-                            <button class="icon-btn success" onclick="downloadFile('/api/translate/download/${item.task_id}?file_type=dual')" title="下载译文 (双语)" style="font-weight:bold;font-size:13px;width:32px;">双</button>
-                            <button class="icon-btn danger" onclick="deleteHistory('${item.task_id}')" title="删除">🗑️</button>
-                        </div>
-                    </div>
-                `).join('');
-                } catch (e) {
-                    console.error('加载历史失败:', e);
-                }
-            }
-
-            function escapeHtml(str) {
-                if (!str) return '';
-                return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
-            }
-
-            function formatDate(dateStr) {
-                if (!dateStr) return '';
-                try {
-                    const d = new Date(parseFloat(dateStr) * 1000);
-                    return d.toLocaleString('zh-CN');
-                } catch { return dateStr; }
-            }
-
-            async function redownload(taskId) {
-                downloadFile(`/api/translate/download/${taskId}?file_type=mono`);
-            }
-
-            async function retranslate(taskId) {
-                alert('重新翻译功能开发中');
-            }
-
-            async function deleteHistory(taskId) {
-                if (!confirm('确定要删除此记录吗？')) return;
-                try {
-                    await api(`/api/translate/history/${taskId}`, { method: 'DELETE' });
-                    loadHistory();
-                } catch (e) {
-                    alert('删除失败');
-                }
-            }
-
-            // 初始化
+        // Initialize
+        async function init() {
+            if (!checkAuth()) return;
             loadHistory();
 
-            // 恢复未完成的任务
+            // Show Dashboard if admin
+            const isAdmin = localStorage.getItem('is_admin');
+            if (isAdmin === 'true' || isAdmin === true) {
+                const navDash = document.getElementById('navDashboard');
+                if (navDash) navDash.style.display = 'inline';
+            }
+
+            // Check for saved state
             const savedTaskId = localStorage.getItem('currentTaskId');
             if (savedTaskId) {
                 currentTaskId = savedTaskId;
@@ -789,7 +590,181 @@
                 translateBtn.textContent = '正在翻译...';
                 pollProgress();
             }
-        </script>
+        }
+
+        // 轮询进度
+        async function pollProgress() {
+            if (!currentTaskId) return;
+
+            try {
+                const res = await api(`/api/translate/status/${currentTaskId}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    const progress = parseFloat(data.progress || 0);
+                    document.getElementById('progressFill').style.width = `${progress}%`;
+                    document.getElementById('progressText').textContent = `${progress.toFixed(2)}%`;
+
+                    if (data.status === 'completed') {
+                        localStorage.removeItem('currentTaskId');
+                        localStorage.removeItem('currentFileName');
+                        localStorage.removeItem('currentFileSize');
+                        localStorage.removeItem('currentFileId');
+                        showResult(data.output_files);
+                        loadHistory();
+                        return;
+                    } else if (data.status === 'failed') {
+                        localStorage.removeItem('currentTaskId');
+                        localStorage.removeItem('currentFileName');
+                        localStorage.removeItem('currentFileSize');
+                        localStorage.removeItem('currentFileId');
+                        alert('翻译失败: ' + (data.error || '未知错误'));
+                        translateBtn.disabled = false;
+                        translateBtn.textContent = '🚀 开始翻译';
+                        return;
+                    }
+
+                    setTimeout(pollProgress, 2000);
+                }
+            } catch (e) {
+                setTimeout(pollProgress, 3000);
+            }
+        }
+
+        function showResult(outputFiles) {
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('resultSection').classList.add('show');
+            translateBtn.disabled = false;
+            translateBtn.textContent = '🚀 开始翻译';
+
+            document.getElementById('downloadMonoBtn').onclick = () => {
+                downloadFile(`/api/translate/download/${currentTaskId}?file_type=mono`);
+            };
+            document.getElementById('downloadDualBtn').onclick = () => {
+                downloadFile(`/api/translate/download/${currentTaskId}?file_type=dual`);
+            };
+        }
+
+        async function downloadFile(url) {
+            try {
+                const res = await api(url);
+                if (!res.ok) throw new Error('下载失败');
+
+                const blob = await res.blob();
+                const contentDisp = res.headers.get('Content-Disposition');
+                let filename = 'translated.pdf';
+                if (contentDisp && contentDisp.indexOf('filename=') !== -1) {
+                    filename = contentDisp.split('filename=')[1].replace(/["]/g, '');
+                    filename = decodeURIComponent(filename);
+                }
+
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(downloadUrl);
+            } catch (e) {
+                alert('下载出错: ' + e.message);
+            }
+        }
+
+        document.getElementById('newTranslateBtn').addEventListener('click', resetUpload);
+
+        // 加载历史记录
+        async function loadHistory() {
+            try {
+                const res = await api('/api/translate/history');
+                const data = await res.json();
+
+                const listEl = document.getElementById('historyList');
+                const emptyEl = document.getElementById('historyEmpty');
+
+                if (!data.history || data.history.length === 0) {
+                    listEl.innerHTML = '';
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+
+                emptyEl.style.display = 'none';
+                listEl.innerHTML = data.history.map(item => `
+                    <div class="history-item">
+                        <div class="history-item-info">
+                            <div class="history-item-title">${escapeHtml(item.original_filename?.replace(/^[a-f0-9-]+_/i, '') || '未知文件')}</div>
+                            <div class="history-item-date">${formatDate(item.created_at)}</div>
+                        </div>
+                        <div class="history-item-actions">
+                            <button class="icon-btn success" onclick="downloadFile('/api/translate/download/${item.task_id}?file_type=mono')" title="下载译文 (单语)" style="font-weight:bold;font-size:13px;width:32px;">A</button>
+                            <button class="icon-btn success" onclick="downloadFile('/api/translate/download/${item.task_id}?file_type=dual')" title="下载译文 (双语)" style="font-weight:bold;font-size:13px;width:32px;">双</button>
+                            <button class="icon-btn danger" onclick="deleteHistory('${item.task_id}')" title="删除">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('加载历史失败:', e);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const d = new Date(parseFloat(dateStr) * 1000);
+                return d.toLocaleString('zh-CN');
+            } catch { return dateStr; }
+        }
+
+        async function redownload(taskId) {
+            downloadFile(`/api/translate/download/${taskId}?file_type=mono`);
+        }
+
+        async function retranslate(taskId) {
+            alert('重新翻译功能开发中');
+        }
+
+        async function deleteHistory(taskId) {
+            if (!confirm('确定要删除此记录吗？')) return;
+            try {
+                await api(`/api/translate/history/${taskId}`, { method: 'DELETE' });
+                loadHistory();
+            } catch (e) {
+                alert('删除失败');
+            }
+        }
+
+        // 初始化
+        loadHistory();
+
+        // 恢复未完成的任务
+        const savedTaskId = localStorage.getItem('currentTaskId');
+        if (savedTaskId) {
+            currentTaskId = savedTaskId;
+
+            // 恢复文件信息显示
+            const savedName = localStorage.getItem('currentFileName');
+            const savedSize = localStorage.getItem('currentFileSize');
+            const savedFileId = localStorage.getItem('currentFileId');
+
+            if (savedName) {
+                document.getElementById('fileNameDisplay').textContent = savedName;
+                document.getElementById('fileMeta').textContent = savedSize || '恢复的文件';
+                uploadBox.classList.add('has-file');
+                currentFileName = savedName;
+                currentFileId = savedFileId;
+            }
+
+            document.getElementById('progressSection').style.display = 'block';
+            translateBtn.disabled = true;
+            translateBtn.textContent = '正在翻译...';
+            pollProgress();
+        }
+    </script>
 </body>
 
 </html>
