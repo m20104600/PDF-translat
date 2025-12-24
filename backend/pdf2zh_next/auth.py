@@ -54,6 +54,12 @@ class UserManager:
             )
         """)
 
+        # Migration: Check if is_admin column exists (for handling old DBs)
+        cursor.execute("PRAGMA table_info(users)")
+        columns = [info[1] for info in cursor.fetchall()]
+        if 'is_admin' not in columns:
+            cursor.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0")
+
         # Sessions table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS sessions (
