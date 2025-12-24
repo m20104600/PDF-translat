@@ -298,6 +298,16 @@
                 <div class="file-name-display" id="fileNameDisplay">点击选择或拖拽PDF文件</div>
                 <div class="file-meta" id="fileMeta">支持 PDF 格式，最大 50MB</div>
                 <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                <!-- 上传进度条 -->
+                <div id="uploadProgressSection" style="display: none; width: 100%; margin-top: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px;">
+                        <span>上传中...</span>
+                        <span id="uploadProgressText">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="uploadProgressFill" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="divider">— 或者 —</div>
@@ -472,23 +482,66 @@
             currentFile = file;
             currentFileName = file.name;
             document.getElementById('fileNameDisplay').textContent = file.name;
-            document.getElementById('fileMeta').textContent = formatFileSize(file.size) + ' - 点击更换';
+            document.getElementById('fileMeta').textContent = formatFileSize(file.size) + ' - 正在上传...';
             uploadBox.classList.add('has-file');
 
-            // 上传文件
+            // 显示上传进度条
+            const uploadProgressSection = document.getElementById('uploadProgressSection');
+            const uploadProgressFill = document.getElementById('uploadProgressFill');
+            const uploadProgressText = document.getElementById('uploadProgressText');
+            uploadProgressSection.style.display = 'block';
+            uploadProgressFill.style.width = '0%';
+            uploadProgressText.textContent = '0%';
+
+            // 使用 XMLHttpRequest 以支持上传进度监听
             const formData = new FormData();
             formData.append('file', file);
 
             try {
-                const res = await api('/api/translate/upload', { method: 'POST', body: formData });
-                const data = await res.json();
-                if (data.success) {
-                    currentFileId = data.file_id;
+                const result = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+
+                    // 监听上传进度
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            const percent = Math.round((e.loaded / e.total) * 100);
+                            uploadProgressFill.style.width = percent + '%';
+                            uploadProgressText.textContent = percent + '%';
+                        }
+                    });
+
+                    xhr.addEventListener('load', () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            try {
+                                resolve(JSON.parse(xhr.responseText));
+                            } catch (e) {
+                                reject(new Error('响应解析失败'));
+                            }
+                        } else {
+                            reject(new Error(xhr.statusText || '上传失败'));
+                        }
+                    });
+
+                    xhr.addEventListener('error', () => reject(new Error('网络错误')));
+                    xhr.addEventListener('abort', () => reject(new Error('上传已取消')));
+
+                    xhr.open('POST', '/api/translate/upload');
+                    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                    xhr.send(formData);
+                });
+
+                // 上传完成
+                uploadProgressSection.style.display = 'none';
+                document.getElementById('fileMeta').textContent = formatFileSize(file.size) + ' - 点击更换';
+
+                if (result.success) {
+                    currentFileId = result.file_id;
                     translateBtn.disabled = false;
                 } else {
-                    throw new Error(data.detail || '上传失败');
+                    throw new Error(result.detail || '上传失败');
                 }
             } catch (e) {
+                uploadProgressSection.style.display = 'none';
                 alert('上传失败: ' + e.message);
                 resetUpload();
             }
