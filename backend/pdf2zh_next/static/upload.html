@@ -306,7 +306,7 @@
             <span class="nav-icon">🚀</span>
             开始翻译
         </a>
-        <a href="/static/dashboard.html" class="nav-item">
+        <a href="/static/dashboard.html" class="nav-item" id="navDashboard" style="display: none;">
             <span class="nav-icon">📊</span>
             仪表盘
         </a>
@@ -580,6 +580,43 @@
                     translateBtn.textContent = '🚀 开始翻译';
                 }
             });
+
+            // Initialize
+            async function init() {
+                if (!checkAuth()) return;
+                loadHistory();
+
+                // Show Dashboard if admin
+                const isAdmin = localStorage.getItem('is_admin'); // Note: it might be boolean or string depending on storage
+                if (isAdmin === 'true' || isAdmin === true) {
+                    const navDash = document.getElementById('navDashboard');
+                    if (navDash) navDash.style.display = 'flex';
+                }
+
+                // Check for saved state
+                const savedTaskId = localStorage.getItem('currentTaskId');
+                if (savedTaskId) {
+                    currentTaskId = savedTaskId;
+
+                    // 恢复文件信息显示
+                    const savedName = localStorage.getItem('currentFileName');
+                    const savedSize = localStorage.getItem('currentFileSize');
+                    const savedFileId = localStorage.getItem('currentFileId');
+
+                    if (savedName) {
+                        document.getElementById('fileNameDisplay').textContent = savedName;
+                        document.getElementById('fileMeta').textContent = savedSize || '恢复的文件';
+                        uploadBox.classList.add('has-file');
+                        currentFileName = savedName;
+                        currentFileId = savedFileId;
+                    }
+
+                    document.getElementById('progressSection').style.display = 'block';
+                    translateBtn.disabled = true;
+                    translateBtn.textContent = '正在翻译...';
+                    pollProgress();
+                }
+            }
 
             // 轮询进度
             async function pollProgress() {

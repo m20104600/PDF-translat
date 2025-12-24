@@ -13,8 +13,7 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <h1>PDF Translator</h1>
-                <p>登录您的账户</p>
+                <h1 class="card-title">登录 PDF Translator</h1>
             </div>
 
             <div id="alert" class="alert"></div>
@@ -30,20 +29,21 @@
                     <input type="password" id="password" name="password" placeholder="输入密码" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                    <span id="btnText">登录</span>
-                    <span id="btnLoader" class="hidden">⏳</span>
-                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">登录</button>
             </form>
 
-            <div class="auth-link" id="registerLink" style="display: none;">
-                还没有账户？<a href="/static/register.html">立即注册</a>
+            <div id="registerSection" style="margin-top: 16px; text-align: center; display: none;">
+                <a href="#" id="toggleModeBtn"
+                    style="color: var(--primary); text-decoration: none; font-size: 14px;">注册新账号</a>
             </div>
         </div>
     </div>
 
     <script>
+        let isLoginMode = true;
+
         async function init() {
+            // Check if user is already logged in
             const token = localStorage.getItem('token');
             if (token) {
                 try {
@@ -59,6 +59,9 @@
                 }
             }
 
+            // Check if registration is enabled (backend could provide this, asking blindly for now)
+            // Or we just show the link and let the API reject if disabled.
+            // For better UX, checking status is nice, but keeping it simple as per plan.
             document.getElementById('registerSection').style.display = 'block';
         }
 
@@ -69,9 +72,8 @@
             const title = document.querySelector('.card-title');
             const submitBtn = document.getElementById('submitBtn');
             const toggleBtn = document.getElementById('toggleModeBtn');
-            const alertDiv = document.getElementById('alert'); // Get the alert div
+            const alertDiv = document.getElementById('alert');
 
-            // Clear any previous alerts when toggling mode
             alertDiv.textContent = '';
             alertDiv.classList.remove('alert-error', 'show');
 
@@ -89,14 +91,14 @@
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const username = document.getElementById('username').value.trim(); // Added .trim()
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const alertDiv = document.getElementById('alert'); // Renamed from errorMsg to alertDiv to match existing HTML
+            const alertDiv = document.getElementById('alert');
             const submitBtn = document.getElementById('submitBtn');
             const inputs = document.querySelectorAll('input');
 
-            alertDiv.textContent = ''; // Clear previous messages
-            alertDiv.classList.remove('alert-error', 'show'); // Remove error class
+            alertDiv.textContent = '';
+            alertDiv.classList.remove('alert-error', 'show');
             submitBtn.disabled = true;
             submitBtn.style.opacity = '0.7';
             inputs.forEach(i => i.disabled = true);
@@ -119,21 +121,20 @@
                 if (isLoginMode) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('username', data.username);
-                    localStorage.setItem('is_admin', data.is_admin); // Changed from isAdmin to is_admin to match original
-                    window.location.href = '/static/upload.html'; // Changed from '/' to '/static/upload.html' to match original redirect
+                    localStorage.setItem('is_admin', data.is_admin);
+                    window.location.href = '/static/upload.html';
                 } else {
-                    // Registration successful, switch to login
-                    alertDiv.textContent = '注册成功！请登录。'; // Use alertDiv for message
-                    alertDiv.classList.add('show'); // Show success message
+                    alertDiv.textContent = '注册成功！请登录。';
+                    alertDiv.classList.add('show', 'alert-success'); // Add success class if you have it, otherwise standard alert
+                    // Switch back to login mode automatically
                     document.getElementById('toggleModeBtn').click();
-                    // Auto fill
                     document.getElementById('username').value = username;
                     document.getElementById('password').value = '';
                 }
 
             } catch (e) {
-                alertDiv.textContent = e.message; // Use alertDiv for error message
-                alertDiv.classList.add('alert-error', 'show'); // Add error class and show
+                alertDiv.textContent = e.message;
+                alertDiv.classList.add('alert-error', 'show');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = '1';
@@ -146,4 +147,3 @@
 </body>
 
 </html>
-```

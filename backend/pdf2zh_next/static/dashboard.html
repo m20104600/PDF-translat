@@ -378,9 +378,15 @@
                 });
                 if (!res.ok) throw new Error('Auth failed');
                 currentUser = await res.json();
-                document.getElementById('userInfo').textContent = `欢迎, ${currentUser.username}`;
 
-                // PWA Install Prompt Logic could go here
+                // Security Check: Redirect non-admins
+                if (!currentUser.is_admin) {
+                    alert('Access Denied: 仅管理员可访问控制台');
+                    window.location.href = '/static/upload.html';
+                    return;
+                }
+
+                document.getElementById('userInfo').textContent = `欢迎, ${currentUser.username}`;
 
             } catch (e) {
                 localStorage.removeItem('token');

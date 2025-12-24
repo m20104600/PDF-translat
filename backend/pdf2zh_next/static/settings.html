@@ -127,7 +127,7 @@
                 <span class="nav-icon">🚀</span>
                 开始翻译
             </a>
-            <a href="/static/dashboard.html" class="nav-item">
+            <a href="/static/dashboard.html" class="nav-item" id="navDashboard" style="display: none;">
                 <span class="nav-icon">📊</span>
                 仪表盘
             </a>
@@ -710,8 +710,20 @@
             } catch (e) { }
         });
 
-        // 初始化
-        loadSettings();
+        // Initialize page
+        async function init() {
+            // Show Dashboard if admin
+            const isAdmin = localStorage.getItem('is_admin');
+            if (isAdmin === 'true' || isAdmin === true) {
+                const navDash = document.getElementById('navDashboard');
+                if (navDash) navDash.style.display = 'flex';
+            }
+
+            // Load settings
+            await loadSettings();
+        }
+
+        init();
     </script>
 </body>
 
