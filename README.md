@@ -32,6 +32,19 @@ services:
       - 'PDF2ZH_UI_LANG=zh'  # 界面语言
       # 如需切换到原版 Gradio UI，取消下行注释：
       # - 'PDF2ZH_USE_GRADIO=1'
+
+  pdf-api:
+    image: m20104600/pdf-translator:latest
+    container_name: pdf-translator-api
+    network_mode: bridge
+    restart: always
+    ports:
+      - '8000:8000'
+    command: [ "python", "-m", "uvicorn", "app.main_new:app", "--host", "0.0.0.0", "--port", "8000" ]
+    volumes:
+      - './data:/app/data'
+    environment:
+      - 'JWT_SECRET_KEY=change-this-in-production'
 ```
 
 > [!TIP]
