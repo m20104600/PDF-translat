@@ -86,6 +86,31 @@ async def main() -> int:
         return 0
 
     logger.info("Warmup babeldoc assets...")
+    
+    # Try to load proxy settings from any user's config to help with warmup
+    try:
+        import json
+        data_dir = Path(os.getcwd()) / "data" / "webui" / "users"
+        if data_dir.exists():
+            for user_dir in data_dir.iterdir():
+                if user_dir.is_dir():
+                    settings_file = user_dir / "settings.json"
+                    if settings_file.exists():
+                        try:
+                            settings = json.loads(settings_file.read_text(encoding='utf-8'))
+                            proxy = settings.get("universal_proxy") or settings.get("socks_proxy")
+                            if proxy:
+                                logger.info(f"Applying proxy from user {user_dir.name} for warmup: {proxy}")
+                                os.environ["HTTP_PROXY"] = proxy
+                                os.environ["HTTPS_PROXY"] = proxy
+                                os.environ["http_proxy"] = proxy
+                                os.environ["https_proxy"] = proxy
+                                break # Use the first valid proxy found
+                        except Exception:
+                            pass
+    except Exception as e:
+        logger.warning(f"Failed to load proxy settings: {e}")
+
     babeldoc.assets.assets.warmup()
 
     if settings.basic.gui:
