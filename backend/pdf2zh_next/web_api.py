@@ -229,8 +229,27 @@ async def logout(current_user: dict = Depends(get_current_user), authorization: 
 
 
 @app.post("/api/auth/register")
-async def register_user(request: RegisterRequest, admin_user: dict = Depends(get_admin_user)):
-    """Register a new user (admin only)"""
+async def register_user(
+    request: RegisterRequest, 
+    authorization: str = Header(None)
+):
+    """
+    Register a new user.
+    If registration is open, anyone can register.
+    If closed, only admins can register new users.
+    """
+    registration_enabled = user_manager.get_registration_enabled()
+    
+    # If registration is disabled, check for admin token
+    if not registration_enabled:
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=403, detail="Registration is disabled. Admin access required.")
+        
+        token = authorization.replace("Bearer ", "")
+        user_data = user_manager.validate_token(token)
+        if not user_data or not user_data.get('is_admin'):
+             raise HTTPException(status_code=403, detail="Admin access required")
+
     try:
         user_manager.create_user(request.username, request.password, is_admin=False)
         return {"success": True, "message": f"User '{request.username}' created successfully"}
@@ -246,6 +265,68 @@ async def list_users(admin_user: dict = Depends(get_admin_user)):
         return {"success": True, "users": users}
     except AuthenticationError as e:
         raise HTTPException(status_code=403, detail=str(e))
+
+
+@app.delete("/api/admin/users/{username}")
+async def delete_user(username: str, admin_user: dict = Depends(get_admin_user)):
+    """Delete a user (admin only)"""
+    try:
+        user_manager.delete_user(username, admin_user['username'])
+        return {"success": True, "message": f"User '{username}' deleted"}
+    except (ValueError, AuthenticationError) as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/api/admin/settings")
+async def get_admin_settings(admin_user: dict = Depends(get_admin_user)):
+    """Get system settings (admin only)"""
+    return {
+        "success": True,
+        "settings": {
+            "allow_registration": user_manager.get_registration_enabled()
+        }
+    }
+
+
+class AdminSettingsRequest(BaseModel):
+    allow_registration: bool
+
+
+@app.post("/api/admin/settings")
+async def update_admin_settings(request: AdminSettingsRequest, admin_user: dict = Depends(get_admin_user)):
+    """Update system settings (admin only)"""
+    try:
+        user_manager.set_registration_enabled(request.allow_registration, admin_user['username'])
+        return {"success": True, "message": "Settings updated"}
+    except AuthenticationError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+
+@app.get("/api/admin/stats")
+async def get_system_stats(admin_user: dict = Depends(get_admin_user)):
+    """Get system statistics (admin only)"""
+    try:
+        users = user_manager.list_users(admin_user['username'])
+        total_users = len(users)
+        
+        # Calculate storage usage (approximate)
+        import shutil
+        total, used, free = shutil.disk_usage("data")
+        
+        # Count total active tasks
+        active_count = len(active_tasks)
+        
+        return {
+            "success": True, 
+            "stats": {
+                "total_users": total_users,
+                "active_tasks": active_count,
+                "disk_usage_gb": f"{used / (1024**3):.2f} / {total / (1024**3):.2f} GB"
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error getting stats: {e}")
+        return {"success": False, "error": str(e)}
 
 
 @app.delete("/api/auth/users/{username}")

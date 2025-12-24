@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>控制台 - PDF Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Styles (Shared) */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 40px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto 0 var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .table-container {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge.admin {
+            background-color: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+        }
+
+        .badge.user {
+            background-color: rgba(148, 163, 184, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-sm:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--success);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+
+
+    <div class="sidebar" id="sidebar">
+        <a href="/" class="logo">
+            <span>📄</span> PDF Translator
+        </a>
+        <a href="/" class="nav-item">
+            <span>🚀</span> 开始翻译
+        </a>
+        <a href="/static/dashboard.html" class="nav-item active">
+            <span>📊</span> 仪表盘
+        </a>
+        <a href="/static/history.html" class="nav-item">
+            <span>📜</span> 历史记录
+        </a>
+        <a href="/static/settings.html" class="nav-item">
+            <span>⚙️</span> 系统设置
+        </a>
+        <div style="flex:1"></div>
+        <div class="nav-item" style="cursor:pointer" onclick="logout()">
+            <span>🚪</span> 退出登录
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div style="display:flex;align-items:center;">
+                <span class="menu-toggle" onclick="toggleSidebar()">☰</span>
+                <h1 class="title">控制台</h1>
+            </div>
+            <div id="userInfo" style="color: var(--text-secondary); font-size: 14px;"></div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="grid" id="statsGrid">
+            <!-- 动态填充 -->
+        </div>
+
+        <!-- 系统设置 (仅管理员) -->
+        <div id="adminSettingsSection" class="card" style="margin-bottom: 32px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 class="section-title" style="margin:0">开放用户注册</h3>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 4px;">开启后，任何人都可以注册新账户</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="regSwitch" onchange="toggleRegistration(this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 用户列表 (仅管理员) -->
+        <div id="userListSection" style="display: none;">
+            <h3 class="section-title">用户管理</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>角色</th>
+                            <th>注册时间</th>
+                            <th>最后登录</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUser = null;
+
+        async function init() {
+            await checkAuth();
+            if (currentUser.is_admin) {
+                loadAdminData();
+            } else {
+                loadUserData();
+            }
+        }
+
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/static/login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('Auth failed');
+                currentUser = await res.json();
+                document.getElementById('userInfo').textContent = `欢迎, ${currentUser.username}`;
+
+                // PWA Install Prompt Logic could go here
+
+            } catch (e) {
+                localStorage.removeItem('token');
+                window.location.href = '/static/login.html';
+            }
+        }
+
+        async function loadAdminData() {
+            document.getElementById('adminSettingsSection').style.display = 'block';
+            document.getElementById('userListSection').style.display = 'block';
+
+            // 1. 获取统计
+            try {
+                const { token } = getAuth();
+                const res = await fetch(`${API_BASE}/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const { stats } = await res.json();
+
+                renderStats([
+                    { label: '总用户数', value: stats.total_users },
+                    { label: '正在进行的任务', value: stats.active_tasks },
+                    { label: '磁盘占用 (已用/总共)', value: stats.disk_usage_gb }
+                ]);
+            } catch (e) { console.error(e); }
+
+            // 2. 获取用户列表
+            try {
+                const { token } = getAuth();
+                const res = await fetch(`${API_BASE}/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const { users } = await res.json();
+                renderUserTable(users);
+            } catch (e) { console.error(e); }
+
+            // 3. 获取设置
+            try {
+                const { token } = getAuth();
+                const res = await fetch(`${API_BASE}/admin/settings`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const { settings } = await res.json();
+                document.getElementById('regSwitch').checked = settings.allow_registration;
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadUserData() {
+            // 普通用户只显示简单欢迎或个人统计 (如有)
+            renderStats([
+                { label: '账户状态', value: '正常' },
+                { label: '当前角色', value: '普通用户' }
+            ]);
+        }
+
+        function renderStats(items) {
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = items.map(item => `
+                <div class="card">
+                    <div class="stat-label">${item.label}</div>
+                    <div class="stat-value">${item.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderUserTable(users) {
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.username}</td>
+                    <td><span class="badge ${user.is_admin ? 'admin' : 'user'}">${user.is_admin ? '管理员' : '用户'}</span></td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>${user.last_login ? new Date(user.last_login).toLocaleDateString() : '-'}</td>
+                    <td>
+                        ${!user.is_admin ? `<button class="btn-sm" onclick="deleteUser('${user.username}')">删除</button>` : '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function toggleRegistration(enabled) {
+            try {
+                const { token } = getAuth();
+                await fetch(`${API_BASE}/admin/settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ allow_registration: enabled })
+                });
+            } catch (e) {
+                alert('设置更新失败');
+                document.getElementById('regSwitch').checked = !enabled;
+            }
+        }
+
+        async function deleteUser(username) {
+            if (!confirm(`确定要删除用户 ${username} 及其所有数据吗？此操作不可恢复。`)) return;
+
+            try {
+                const { token } = getAuth();
+                const res = await fetch(`${API_BASE}/admin/users/${username}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    loadAdminData(); // 刷新列表
+                } else {
+                    throw new Error('删除失败');
+                }
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        function getAuth() {
+            return { token: localStorage.getItem('token') };
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/static/login.html';
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

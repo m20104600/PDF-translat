@@ -43,52 +43,68 @@
     </div>
 
     <script>
-        // Check if already logged in
-        (async function () {
+        async function init() {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const res = await fetch('/api/settings', {
+                    const res = await fetch('/api/auth/me', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (res.ok) {
                         window.location.href = '/static/upload.html';
                         return;
                     }
-                } catch (e) { }
-                localStorage.removeItem('token');
+                } catch (e) {
+                    localStorage.removeItem('token');
+                }
             }
 
-            // Check if registration is enabled
-            try {
-                const res = await fetch('/api/auth/registration-status');
-                const data = await res.json();
-                if (data.enabled) {
-                    document.getElementById('registerLink').style.display = 'block';
-                }
-            } catch (e) { }
-        })();
+            document.getElementById('registerSection').style.display = 'block';
+        }
 
-        // Handle login form submission
+        document.getElementById('toggleModeBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+
+            const title = document.querySelector('.card-title');
+            const submitBtn = document.getElementById('submitBtn');
+            const toggleBtn = document.getElementById('toggleModeBtn');
+            const alertDiv = document.getElementById('alert'); // Get the alert div
+
+            // Clear any previous alerts when toggling mode
+            alertDiv.textContent = '';
+            alertDiv.classList.remove('alert-error', 'show');
+
+            if (isLoginMode) {
+                title.textContent = '登录 PDF Translator';
+                submitBtn.textContent = '登录';
+                toggleBtn.textContent = '注册新账号';
+            } else {
+                title.textContent = '注册新账号';
+                submitBtn.textContent = '创建账户';
+                toggleBtn.textContent = '返回登录';
+            }
+        });
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const alert = document.getElementById('alert');
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const btnLoader = document.getElementById('btnLoader');
-
-            const username = document.getElementById('username').value.trim();
+            const username = document.getElementById('username').value.trim(); // Added .trim()
             const password = document.getElementById('password').value;
+            const alertDiv = document.getElementById('alert'); // Renamed from errorMsg to alertDiv to match existing HTML
+            const submitBtn = document.getElementById('submitBtn');
+            const inputs = document.querySelectorAll('input');
 
-            // Disable button
+            alertDiv.textContent = ''; // Clear previous messages
+            alertDiv.classList.remove('alert-error', 'show'); // Remove error class
             submitBtn.disabled = true;
-            btnText.textContent = '登录中...';
-            btnLoader.classList.remove('hidden');
-            alert.classList.remove('show');
+            submitBtn.style.opacity = '0.7';
+            inputs.forEach(i => i.disabled = true);
 
             try {
-                const res = await fetch('/api/auth/login', {
+                const endpoint = isLoginMode ? '/api/auth/login' : '/api/auth/register';
+
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
@@ -96,27 +112,38 @@
 
                 const data = await res.json();
 
-                if (res.ok && data.success) {
-                    // Store token and user info
+                if (!res.ok) {
+                    throw new Error(data.detail || (isLoginMode ? '登录失败' : '注册失败'));
+                }
+
+                if (isLoginMode) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('username', data.username);
-                    localStorage.setItem('is_admin', data.is_admin);
-
-                    // Redirect to upload page
-                    window.location.href = '/static/upload.html';
+                    localStorage.setItem('is_admin', data.is_admin); // Changed from isAdmin to is_admin to match original
+                    window.location.href = '/static/upload.html'; // Changed from '/' to '/static/upload.html' to match original redirect
                 } else {
-                    throw new Error(data.detail || '登录失败');
+                    // Registration successful, switch to login
+                    alertDiv.textContent = '注册成功！请登录。'; // Use alertDiv for message
+                    alertDiv.classList.add('show'); // Show success message
+                    document.getElementById('toggleModeBtn').click();
+                    // Auto fill
+                    document.getElementById('username').value = username;
+                    document.getElementById('password').value = '';
                 }
-            } catch (error) {
-                alert.textContent = error.message;
-                alert.classList.add('alert-error', 'show');
+
+            } catch (e) {
+                alertDiv.textContent = e.message; // Use alertDiv for error message
+                alertDiv.classList.add('alert-error', 'show'); // Add error class and show
             } finally {
                 submitBtn.disabled = false;
-                btnText.textContent = '登录';
-                btnLoader.classList.add('hidden');
+                submitBtn.style.opacity = '1';
+                inputs.forEach(i => i.disabled = false);
             }
         });
+
+        init();
     </script>
 </body>
 
 </html>
+```
