@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - PDF Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>PDF Translator</h1>
+                <p id="subtitle">创建管理员账户</p>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" placeholder="至少3个字符" required autofocus
+                        minlength="3">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" placeholder="至少6个字符" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="再次输入密码" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <span id="btnText">创建账户</span>
+                    <span id="btnLoader" class="hidden">⏳</span>
+                </button>
+            </form>
+
+            <div class="auth-link" id="loginLink">
+                已有账户？<a href="/static/login.html">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const isSetup = new URLSearchParams(window.location.search).get('setup') === '1';
+
+        // Check auth status
+        (async function () {
+            try {
+                const res = await fetch('/api/auth/status');
+                const data = await res.json();
+
+                if (data.setup_required) {
+                    // First-time setup mode
+                    document.getElementById('subtitle').textContent = '创建管理员账户';
+                    document.getElementById('loginLink').style.display = 'none';
+                } else if (!isSetup) {
+                    // Check if registration is enabled
+                    const regRes = await fetch('/api/auth/registration-status');
+                    const regData = await regRes.json();
+
+                    if (!regData.enabled) {
+                        document.getElementById('subtitle').textContent = '注册已关闭';
+                        document.getElementById('registerForm').innerHTML = `
+                            <div class="alert alert-error show">
+                                用户注册当前已关闭。请联系管理员获取账户。
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('subtitle').textContent = '创建新账户';
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking status:', e);
+            }
+        })();
+
+        // Handle registration form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const alert = document.getElementById('alert');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                alert.textContent = '两次输入的密码不一致';
+                alert.classList.remove('alert-success');
+                alert.classList.add('alert-error', 'show');
+                return;
+            }
+
+            // Disable button
+            submitBtn.disabled = true;
+            btnText.textContent = '创建中...';
+            btnLoader.classList.remove('hidden');
+            alert.classList.remove('show');
+
+            try {
+                // Check if this is initial setup
+                const statusRes = await fetch('/api/auth/status');
+                const statusData = await statusRes.json();
+
+                let endpoint = '/api/auth/register/public';
+                if (statusData.setup_required) {
+                    endpoint = '/api/auth/setup';
+                }
+
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && (data.success || data.token)) {
+                    // Store token if provided
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('username', data.username);
+                        localStorage.setItem('is_admin', data.is_admin);
+                    }
+
+                    alert.textContent = '账户创建成功！正在跳转...';
+                    alert.classList.remove('alert-error');
+                    alert.classList.add('alert-success', 'show');
+
+                    setTimeout(() => {
+                        window.location.href = '/static/upload.html';
+                    }, 1000);
+                } else {
+                    throw new Error(data.detail || '注册失败');
+                }
+            } catch (error) {
+                alert.textContent = error.message;
+                alert.classList.remove('alert-success');
+                alert.classList.add('alert-error', 'show');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.textContent = '创建账户';
+                btnLoader.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

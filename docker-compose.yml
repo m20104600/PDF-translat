@@ -6,9 +6,11 @@ services:
     ports:
       - "7860:7860"
     volumes:
-      - ./data:/app/data # 包含 webui/, api/, config/, sessions/, users.db
+      - ./data:/app/data # 包含用户数据 (users/, users.db, config/)
     environment:
-      - PDF2ZH_UI_LANG=zh
+      - PDF2ZH_UI_LANG=zh # 界面语言
+      # 如需切换到原版 Gradio UI，取消下行注释：
+      # - PDF2ZH_USE_GRADIO=1
     restart: always
 
   pdf-api:

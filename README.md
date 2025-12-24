@@ -20,30 +20,22 @@
 ```yaml
 services:
   pdf-webui:
-    image: m20104600/pdf-translator:latest # 或者使用本地 build: .
+    image: m20104600/pdf-translator:latest
     container_name: pdf-translator-webui
     network_mode: bridge
     restart: always
     ports:
-      - '7860:7860' # WebUI 访问端口
+      - '7860:7860'  # WebUI 访问端口
     volumes:
-      - './data:/app/data' # 包含 webui/, api/, config/, sessions/, users.db
+      - './data:/app/data'  # 用户数据持久化
     environment:
-      - 'PDF2ZH_UI_LANG=zh' # 界面语言
-
-  pdf-api:
-    image: m20104600/pdf-translator:latest
-    container_name: pdf-translator-api
-    network_mode: bridge
-    restart: always
-    ports:
-      - '8000:8000' # API 访问端口
-    command: ["python", "-m", "uvicorn", "app.main_new:app", "--host", "0.0.0.0", "--port", "8000"]
-    volumes:
-      - './data:/app/data' # 共享数据目录
-    environment:
-      - 'JWT_SECRET_KEY=change-this-in-production' # 生产环境请修改
+      - 'PDF2ZH_UI_LANG=zh'  # 界面语言
+      # 如需切换到原版 Gradio UI，取消下行注释：
+      # - 'PDF2ZH_USE_GRADIO=1'
 ```
+
+> [!TIP]
+> 新版 Web UI（带用户认证）是默认模式。如需使用原版 Gradio UI，设置 `PDF2ZH_USE_GRADIO=1` 或添加 `--gradio` 启动参数。
 
 **常用管理命令：**
 ```bash

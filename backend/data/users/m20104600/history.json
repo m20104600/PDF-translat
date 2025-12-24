@@ -1,0 +1,30 @@
+[
+  {
+    "task_id": "bd4ee414-4b2d-47cf-a00a-4489a317781c",
+    "file_id": "408c7639-c6ca-4f5c-a17d-922883b6d90c",
+    "original_filename": "408c7639-c6ca-4f5c-a17d-922883b6d90c_A_Radiation-Hard_8-Channel_15-Bit_40-MSPS_ADC_for_the_ATLAS_Liquid_Argon_.pdf",
+    "status": "completed",
+    "lang_from": "English",
+    "lang_to": "Simplified Chinese",
+    "service": "SiliconFlow (Free)",
+    "output_files": {
+      "dual": "data\\users\\m20104600\\outputs\\bd4ee414-4b2d-47cf-a00a-4489a317781c\\408c7639-c6ca-4f5c-a17d-922883b6d90c_A_Radiation-Hard_8-Channel_15-Bit_40-MSPS_ADC_for_the_ATLAS_Liquid_Argon_.zh.dual.pdf",
+      "mono": "data\\users\\m20104600\\outputs\\bd4ee414-4b2d-47cf-a00a-4489a317781c\\408c7639-c6ca-4f5c-a17d-922883b6d90c_A_Radiation-Hard_8-Channel_15-Bit_40-MSPS_ADC_for_the_ATLAS_Liquid_Argon_.zh.mono.pdf"
+    },
+    "created_at": "1766545727.4515584"
+  },
+  {
+    "task_id": "47993f5b-1198-41b2-8046-4c142c8333cf",
+    "file_id": "f0cf9370-1c38-448c-8eef-90a8b13351bb",
+    "original_filename": "f0cf9370-1c38-448c-8eef-90a8b13351bb_A_Radiation-Hard_8-Channel_15-Bit_40-MSPS_ADC_for_the_ATLAS_Liquid_Argon_Calorimeter_Readout.pdf",
+    "status": "completed",
+    "lang_from": "English",
+    "lang_to": "Simplified Chinese",
+    "service": "SiliconFlow (Free)",
+    "output_files": {
+      "dual": "data\\users\\m20104600\\outputs\\47993f5b-1198-41b2-8046-4c142c8333cf\\f0cf9370-1c38-448c-8eef-90a8b13351bb_A_Radiation-Hard_8-Channel_15-Bit_40-MSPS_ADC_for_the_ATLAS_Liquid_Argon_Calorimeter_Readout.zh.dual.pdf",
+      "mono": "data\\users\\m20104600\\outputs\\47993f5b-1198-41b2-8046-4c142c8333cf\\f0cf9370-1c38-448c-8eef-90a8b13351bb_A_Radiation-Hard_8-Channel_15-Bit_40-MSPS_ADC_for_the_ATLAS_Liquid_Argon_Calorimeter_Readout.zh.mono.pdf"
+    },
+    "created_at": "1766542004.1580434"
+  }
+]

@@ -16,7 +16,7 @@ import babeldoc.assets.assets
 from pdf2zh_next.config import ConfigManager
 from pdf2zh_next.high_level import do_translate_file_async
 
-__version__ = "2.8.1"
+__version__ = "2.8.2"
 
 logger = logging.getLogger(__name__)
 
@@ -89,13 +89,34 @@ async def main() -> int:
     babeldoc.assets.assets.warmup()
 
     if settings.basic.gui:
-        from pdf2zh_next.gui import setup_gui
+        # 检查是否使用原版 Gradio UI（通过 --gradio 参数）
+        use_gradio = '--gradio' in sys.argv or os.environ.get('PDF2ZH_USE_GRADIO') == '1'
+        
+        if use_gradio:
+            # 原版 Gradio UI
+            logger.info("启动原版 Gradio UI...")
+            from pdf2zh_next.gui import setup_gui
 
-        setup_gui(
-            auth_file=settings.gui_settings.auth_file,
-            welcome_page=settings.gui_settings.welcome_page,
-            server_port=settings.gui_settings.server_port,
-        )
+            setup_gui(
+                auth_file=settings.gui_settings.auth_file,
+                welcome_page=settings.gui_settings.welcome_page,
+                server_port=settings.gui_settings.server_port,
+            )
+            return 0
+        
+        # 新版 Web UI（带用户认证，默认）
+        logger.info("启动新版 Web UI（带用户认证）...")
+        from pdf2zh_next.web_api import app
+        
+        port = settings.gui_settings.server_port
+        logger.info(f"Web UI 地址: http://localhost:{port}")
+        logger.info("如需使用原版 Gradio UI，请添加 --gradio 参数")
+        
+        # 使用 uvicorn 异步服务器
+        import uvicorn
+        config = uvicorn.Config(app, host="0.0.0.0", port=port, log_level="info")
+        server = uvicorn.Server(config)
+        await server.serve()
         return 0
 
     assert len(settings.basic.input_files) >= 1, "At least one input file is required"

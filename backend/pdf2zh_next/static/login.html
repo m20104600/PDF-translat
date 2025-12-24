@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - PDF Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>PDF Translator</h1>
+                <p>登录您的账户</p>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" placeholder="输入用户名" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" placeholder="输入密码" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <span id="btnText">登录</span>
+                    <span id="btnLoader" class="hidden">⏳</span>
+                </button>
+            </form>
+
+            <div class="auth-link" id="registerLink" style="display: none;">
+                还没有账户？<a href="/static/register.html">立即注册</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if already logged in
+        (async function () {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const res = await fetch('/api/settings', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        window.location.href = '/static/upload.html';
+                        return;
+                    }
+                } catch (e) { }
+                localStorage.removeItem('token');
+            }
+
+            // Check if registration is enabled
+            try {
+                const res = await fetch('/api/auth/registration-status');
+                const data = await res.json();
+                if (data.enabled) {
+                    document.getElementById('registerLink').style.display = 'block';
+                }
+            } catch (e) { }
+        })();
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const alert = document.getElementById('alert');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Disable button
+            submitBtn.disabled = true;
+            btnText.textContent = '登录中...';
+            btnLoader.classList.remove('hidden');
+            alert.classList.remove('show');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    // Store token and user info
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username);
+                    localStorage.setItem('is_admin', data.is_admin);
+
+                    // Redirect to upload page
+                    window.location.href = '/static/upload.html';
+                } else {
+                    throw new Error(data.detail || '登录失败');
+                }
+            } catch (error) {
+                alert.textContent = error.message;
+                alert.classList.add('alert-error', 'show');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.textContent = '登录';
+                btnLoader.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

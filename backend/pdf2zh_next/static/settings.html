@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - PDF 翻译器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .settings-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        .settings-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .settings-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .service-card {
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .service-card:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .service-card.selected {
+            border-color: var(--accent-primary);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .service-card .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .service-card .name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .service-card .desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .api-config {
+            margin-top: 24px;
+        }
+
+        .api-config.hidden {
+            display: none;
+        }
+
+        .field-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .field-hint a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .field-hint a:hover {
+            text-decoration: underline;
+        }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="/static/upload.html" class="header-logo">PDF 翻译器</a>
+        <nav class="header-nav">
+            <a href="/static/upload.html">翻译</a>
+            <a href="/static/settings.html" class="active">设置</a>
+            <span class="user-badge" id="userBadge"></span>
+            <a href="#" id="logoutBtn">退出</a>
+        </nav>
+    </header>
+
+    <main class="settings-container">
+        <!-- API 服务设置 -->
+        <div class="settings-section">
+            <h3>🔧 翻译服务</h3>
+            <p class="section-desc">选择您要使用的翻译服务。默认使用免费的 SiliconFlow。</p>
+
+            <div class="service-grid" id="serviceGrid">
+                <div class="service-card selected" data-service="siliconflow_free">
+                    <div class="icon">
+                        <svg viewBox="0 0 1024 1024" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="512" cy="512" r="512" fill="#6C63FF" />
+                            <path
+                                d="M512 256c-141.4 0-256 114.6-256 256s114.6 256 256 256 256-114.6 256-256-114.6-256-256-256zm128 352h-256v-64h192v-64h-192v-64h256v-64h-320v320h320v-64z"
+                                fill="white" />
+                        </svg>
+                    </div>
+                    <div class="name">SiliconFlow (免费)</div>
+                    <div class="desc">无需配置</div>
+                </div>
+                <div class="service-card" data-service="openai">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M22.28 9.82a5.98 5.98 0 0 0-.51-4.91 6.04 6.04 0 0 0-6.51-2.9 6.07 6.07 0 0 0-5.78-4.21A6.05 6.05 0 0 0 4.98 4.18a5.98 5.98 0 0 0-4 2.9 6.05 6.05 0 0 0 .74 7.1 5.98 5.98 0 0 0 .51 4.91 6.05 6.05 0 0 0 6.52 2.9 6.07 6.07 0 0 0 5.77 4.21 6.05 6.05 0 0 0 4.49-2.29c.14.01.29.02.44.02a6.05 6.05 0 0 0 3.99-2.9 6.05 6.05 0 0 0-.74-7.07c.01-.15.01-.29.01-.43zm-11.9 12.61a4.48 4.48 0 0 1-2.88-1.04l.14-.08 4.78-2.76a.79.79 0 0 0 .39-.68v-6.74l2.02 1.17c.02.01.04.03.04.05v5.58a4.5 4.5 0 0 1-4.49 4.5zM3.6 18.3a4.47 4.47 0 0 1-.53-3.01l.14.08 4.78 2.76a.77.77 0 0 0 .78 0l5.85-3.37v2.33a.08.08 0 0 1-.03.06l-4.83 2.79a4.5 4.5 0 0 1-6.16-1.64zM2.34 7.9a4.48 4.48 0 0 1 2.37-1.97v5.6c0 .28.14.54.39.68l5.81 3.35-2.02 1.17a.08.08 0 0 1-.07 0l-4.83-2.79a4.51 4.51 0 0 1-1.65-6.04zm16.6 3.86l-5.84-3.39 2.02-1.17a.08.08 0 0 1 .07 0l4.83 2.79a4.5 4.5 0 0 1 1.65 6.04v-5.6a.79.79 0 0 0-.39-.67zm2.01-3.03l-.14-.08-4.77-2.76a.78.78 0 0 0-.79 0L9.41 9.23V6.9a.07.07 0 0 1 .03-.06l4.83-2.79a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.14l-2.02-1.17a.08.08 0 0 1-.04-.05V6.07a4.5 4.5 0 0 1 7.37-3.45l-.14.08-4.78 2.76a.79.79 0 0 0-.39.68z"
+                                fill="#FFFFFF" />
+                        </svg>
+                    </div>
+                    <div class="name">OpenAI</div>
+                    <div class="desc">GPT-4o-mini</div>
+                </div>
+                <div class="service-card" data-service="azure_openai">
+                    <div class="icon">
+                        <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 4.5l-12 18h24l-12-18zm0 5l8 12h-16l8-12z" fill="#0078D4" />
+                            <path d="M4 25.5h24v2H4v-2z" fill="#50E6FF" />
+                        </svg>
+                    </div>
+                    <div class="name">Azure OpenAI</div>
+                    <div class="desc">微软OpenAI服务</div>
+                </div>
+                <div class="service-card" data-service="gemini">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12.983 2.502c-4.996.38-9.043 4.25-9.61 9.213-.024.21-.192.368-.403.368H2.47c-.25 0-.422-.24-.348-.478.497-1.583 1.34-3.033 2.45-4.27 2.035-2.27 4.96-3.714 8.214-3.714.28 0 .506.225.506.505v-1.62z"
+                                fill="#4285f4" />
+                            <path
+                                d="M12.983 21.498c-4.996-.38-9.043-4.25-9.61-9.213-.024-.21-.192-.368-.403-.368H2.47c-.25 0-.422.24-.348.478.497 1.583 1.34 3.033 2.45 4.27 2.035 2.27 4.96 3.714 8.214 3.714.28 0 .506-.225.506-.505v1.62z"
+                                fill="#34a853" />
+                            <path
+                                d="M21.53 12.083h-1.048c-.21 0-.378-.158-.402-.368-.567-4.963-4.614-8.833-9.61-9.213v-1.62c0-.28.226-.505.506-.505 3.253 0 6.178 1.444 8.213 3.713 1.11 1.237 1.953 2.687 2.45 4.27.074.238-.098.478-.348.478z"
+                                fill="#ea4335" />
+                            <path
+                                d="M21.53 11.917h-1.048c-.21 0-.378.158-.402.368-.567 4.963-4.614 8.833-9.61 9.213v1.62c0 .28.226.505.506.505 3.253 0 6.178-1.444 8.213-3.713 1.11-1.237 1.953-2.687 2.45-4.27.074-.238-.098-.478-.348-.478z"
+                                fill="#fbbc05" />
+                        </svg>
+                    </div>
+                    <div class="name">Google Gemini</div>
+                    <div class="desc">Gemini Flash</div>
+                </div>
+                <div class="service-card" data-service="deepl">
+                    <div class="icon">
+                        <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M4 6h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zm0 5h4v4h-4zm-6 0h4v4h-4zm6 5h4v4h-4zm-6 0h4v4h-4zm12 0h4v4h-4zm-6 5h4v4h-4z"
+                                fill="#fff" />
+                            <path d="M0 0h32v32H0z" fill="#0F2B46" style="mix-blend-mode:screen" />
+                        </svg>
+                    </div>
+                    <div class="name">DeepL</div>
+                    <div class="desc">专业翻译</div>
+                </div>
+                <div class="service-card" data-service="ollama">
+                    <div class="icon">
+                        <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 4L6 10v12l10 6 10-6V10L16 4z" fill="none" stroke="currentColor"
+                                stroke-width="2" />
+                            <path d="M16 12v16M6 10l10 6 10-6" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="name">Ollama (本地)</div>
+                    <div class="desc">本地大模型</div>
+                </div>
+                <div class="service-card" data-service="azure">
+                    <div class="icon">
+                        <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 4.5l-12 18h24l-12-18z" fill="#0078D4" />
+                            <path d="M4 25.5h24v2H4v-2z" fill="#50E6FF" />
+                        </svg>
+                    </div>
+                    <div class="name">Azure 翻译</div>
+                    <div class="desc">微软翻译服务</div>
+                </div>
+                <div class="service-card" data-service="deepseek">
+                    <div class="icon">
+                        <svg viewBox="0 0 1024 1024" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M512 64C264.6 64 64 264.6 64 512c0 247.4 200.6 448 448 448 247.4 0 448-200.6 448-448C960 264.6 759.4 64 512 64zm0 80c99.4 0 180 80.6 180 180s-80.6 180-180 180-180-80.6-180-180 80.6-180 180-180z"
+                                fill="#4B6EFF" />
+                            <path
+                                d="M512 872c-99.4 0-180-80.6-180-180s80.6-180 180-180 180 80.6 180 180-80.6 180-180 180z"
+                                fill="#4B6EFF" />
+                        </svg>
+                    </div>
+                    <div class="name">DeepSeek</div>
+                    <div class="desc">深度求索</div>
+                </div>
+            </div>
+
+            <!-- API 配置表单 -->
+            <div id="configForm" class="config-form">
+                <!-- 动态渲染配置项 -->
+            </div>
+
+            <!-- 代理设置 (仅管理员) -->
+            <div id="adminProxySection"
+                style="display: none; margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px;">
+                <h3 style="margin-bottom: 16px; font-size: 16px;">网络代理配置</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="universalProxy" style="display:flex;align-items:center;gap:6px;">
+                            通用代理 (HTTP/HTTPS)
+                            <span title="支持 http:// 或 https:// 开头的代理地址&#10;示例: http://127.0.0.1:7890"
+                                style="cursor:help;opacity:0.7;">(?)</span>
+                        </label>
+                        <input type="text" id="universalProxy" class="form-input" placeholder="http://127.0.0.1:7890">
+                    </div>
+                    <div class="form-group">
+                        <label for="socksProxy" style="display:flex;align-items:center;gap:6px;">
+                            SOCKS 代理
+                            <span title="支持 socks5:// 开头的代理地址&#10;示例: socks5://127.0.0.1:1080"
+                                style="cursor:help;opacity:0.7;">(?)</span>
+                        </label>
+                        <input type="text" id="socksProxy" class="form-input" placeholder="socks5://127.0.0.1:1080">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="saveBtn" style="margin-top: 24px;">保存配置</button>
+            <div id="saveStatus" class="alert alert-success" style="margin-top: 16px;">配置保存成功！</div>
+        </div>
+
+        <!-- 账户设置 -->
+        <div class="settings-section">
+            <h3>👤 账户设置</h3>
+            <div id="accountAlert" class="alert" style="margin-bottom: 16px;"></div>
+
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="usernameDisplay" class="form-input" disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="oldPassword">当前密码</label>
+                <input type="password" id="oldPassword" class="form-input" placeholder="输入当前密码">
+            </div>
+
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="newPassword">新密码</label>
+                    <input type="password" id="newPassword" class="form-input" placeholder="至少6个字符" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">确认新密码</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="再次输入">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="changePasswordBtn" style="width: auto;">修改密码</button>
+        </div>
+
+        <!-- 管理员设置 -->
+        <div class="settings-section" id="adminSection" style="display: none;">
+            <h3>🔐 管理员设置</h3>
+
+            <div class="form-group">
+                <label>允许用户注册</label>
+                <div class="toggle-container">
+                    <div class="toggle" id="registrationToggle"></div>
+                    <span id="registrationStatus">已关闭</span>
+                </div>
+                <p class="field-hint">
+                    开启后，新用户可以自行注册账户。
+                </p>
+            </div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div class="settings-section" id="userManageSection" style="display: none;">
+            <h3>👥 用户管理</h3>
+
+            <table class="table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>角色</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody"></tbody>
+            </table>
+
+            <button class="btn btn-secondary" id="addUserBtn" style="margin-top: 16px;">+ 添加用户</button>
+        </div>
+    </main>
+
+    <!-- 保存提示 -->
+    <div class="save-indicator" id="saveIndicator">✓ 已保存</div>
+
+    <!-- 添加用户弹窗 -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal">
+            <h3 class="modal-title">添加新用户</h3>
+            <div id="modalAlert" class="alert" style="margin: 16px 0;"></div>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="newUsername" class="form-input" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="newUserPassword" class="form-input" required minlength="6">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelAddUser">取消</button>
+                    <button type="submit" class="btn btn-primary">创建</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 认证检查
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/static/login.html';
+
+        const username = localStorage.getItem('username');
+        const isAdmin = localStorage.getItem('is_admin') === 'true';
+
+        document.getElementById('usernameDisplay').value = username;
+        const userBadge = document.getElementById('userBadge');
+        userBadge.textContent = username;
+        if (isAdmin) userBadge.classList.add('admin');
+
+        // API 辅助
+        async function api(endpoint, options = {}) {
+            const res = await fetch(endpoint, {
+                ...options,
+                headers: { 'Authorization': `Bearer ${token}`, ...(options.headers || {}) }
+            });
+            if (res.status === 401) {
+                localStorage.clear();
+                window.location.href = '/static/login.html';
+            }
+            return res;
+        }
+
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { }
+            localStorage.clear();
+            window.location.href = '/static/login.html';
+        });
+
+        // 服务配置模板
+        const serviceConfigs = {
+            siliconflow_free: {
+                fields: []
+            },
+            openai: {
+                fields: [
+                    { name: 'api_key', label: 'API Key', type: 'password', required: true, hint: '在 <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI平台</a> 创建 API Key' },
+                    { name: 'model', label: '模型名称', type: 'text', defaultValue: 'gpt-4o-mini', hint: '推荐: gpt-4o-mini, gpt-4o, gpt-4-turbo' },
+                    { name: 'base_url', label: 'API Endpoint (可选)', type: 'text', placeholder: 'https://api.openai.com/v1', hint: '可用第三方OpenAI兼容服务' },
+                    { name: 'temperature', label: 'Temperature (可选)', type: 'number', placeholder: '0.0 - 2.0', hint: '控制输出随机性，较低值更确定' },
+                    { name: 'timeout', label: 'Timeout (可选)', type: 'number', placeholder: '秒', hint: '请求超时时间（秒）' }
+                ]
+            },
+            azure_openai: {
+                fields: [
+                    { name: 'api_key', label: 'API Key', type: 'password', required: true, hint: '在 <a href="https://portal.azure.com" target="_blank">Azure Portal</a> 获取密钥' },
+                    { name: 'base_url', label: 'Azure Endpoint', type: 'text', required: true, placeholder: 'https://your-resource.openai.azure.com', hint: 'Azure OpenAI 资源的端点URL' },
+                    { name: 'model', label: '部署名称', type: 'text', required: true, placeholder: 'gpt-4o-mini', hint: 'Azure上的模型部署名称' },
+                    { name: 'api_version', label: 'API Version', type: 'text', defaultValue: '2024-06-01', hint: 'Azure OpenAI API 版本号' }
+                ]
+            },
+            gemini: {
+                fields: [
+                    { name: 'api_key', label: 'API Key', type: 'password', required: true, hint: '在 <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a> 创建 API Key' },
+                    { name: 'model', label: '模型名称', type: 'text', defaultValue: 'gemini-1.5-flash', hint: '推荐: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash-exp' }
+                ]
+            },
+            deepl: {
+                fields: [
+                    { name: 'api_key', label: 'Auth Key', type: 'password', required: true, hint: '在 <a href="https://www.deepl.com/zh/pro-api" target="_blank">DeepL Pro</a> 订阅后获取' }
+                ]
+            },
+            ollama: {
+                fields: [
+                    { name: 'host', label: 'Ollama 服务地址', type: 'text', defaultValue: 'http://localhost:11434', hint: '本地Ollama服务地址。<a href="https://ollama.com/download" target="_blank">下载Ollama</a>' },
+                    { name: 'model', label: '模型名称', type: 'text', defaultValue: 'gemma2', hint: '使用 ollama list 查看已下载模型，如: llama3, qwen2, gemma2' },
+                    { name: 'num_predict', label: '最大Token数', type: 'number', defaultValue: '2000', hint: '生成的最大token数量' }
+                ]
+            },
+            azure: {
+                fields: [
+                    { name: 'api_key', label: 'Subscription Key', type: 'password', required: true, hint: '在 <a href="https://portal.azure.com" target="_blank">Azure Portal</a> 创建翻译服务资源获取' },
+                    { name: 'endpoint', label: 'Endpoint', type: 'text', defaultValue: 'https://api.translator.azure.cn', hint: 'Azure 翻译服务端点' }
+                ]
+            },
+            deepseek: {
+                fields: [
+                    { name: 'api_key', label: 'API Key', type: 'password', required: true, hint: '在 <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek平台</a> 创建 API Key' },
+                    { name: 'model', label: '模型名称', type: 'text', defaultValue: 'deepseek-chat', hint: '推荐: deepseek-chat, deepseek-coder' }
+                ]
+            }
+        };
+
+        let currentService = 'siliconflow_free';
+        let currentSettings = {};
+
+        // 服务选择
+        const serviceGrid = document.getElementById('serviceGrid');
+        const apiConfig = document.getElementById('apiConfig');
+
+        serviceGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.service-card');
+            if (!card) return;
+
+            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            currentService = card.dataset.service;
+
+            if (currentService === 'siliconflow_free') {
+                apiConfig.classList.add('hidden');
+            } else {
+                apiConfig.classList.remove('hidden');
+                renderConfigForm();
+            }
+        });
+
+        function renderConfigForm() {
+            const config = serviceConfigs[currentService];
+            if (!config) return;
+
+            const html = config.fields.map(field => `
+                <div class="form-group">
+                    <label for="field_${field.name}">${field.label}${field.required ? ' *' : ''}</label>
+                    <input 
+                        type="${field.type}" 
+                        id="field_${field.name}" 
+                        class="form-input" 
+                        ${field.placeholder ? `placeholder="${field.placeholder}"` : ''}
+                        ${field.required ? 'required' : ''}
+                        ${field.type === 'number' ? 'step="0.01"' : ''}
+                        value="${currentSettings[field.name] || field.defaultValue || ''}"
+                    >
+                    ${field.hint ? `<div class="field-hint">${field.hint}</div>` : ''}
+                </div>
+            `).join('');
+
+            apiConfig.innerHTML = html + '<button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 12px;">保存配置</button>';
+        }
+
+        async function saveSettings() {
+            const config = serviceConfigs[currentService];
+            const settings = { service: currentService };
+
+            if (config && config.fields) {
+                for (const field of config.fields) {
+                    const value = document.getElementById(`field_${field.name}`)?.value;
+                    if (field.required && !value) {
+                        alert(`请填写 ${field.label}`);
+                        return;
+                    }
+                    if (value) settings[field.name] = value;
+                }
+            }
+
+            // 保存代理设置 (仅管理员)
+            if (isAdmin) {
+                const universalProxy = document.getElementById('universalProxy').value;
+                const socksProxy = document.getElementById('socksProxy').value;
+                settings.universal_proxy = universalProxy || '';
+                settings.socks_proxy = socksProxy || '';
+            }
+
+            try {
+                await api('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+                currentSettings = settings;
+                showSaveIndicator();
+            } catch (e) {
+                alert('保存失败: ' + e.message);
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const res = await api('/api/settings');
+                const data = await res.json();
+                if (data.settings) {
+                    currentSettings = data.settings;
+                    const service = data.settings.service || 'siliconflow_free';
+                    currentService = service;
+
+                    document.querySelectorAll('.service-card').forEach(c => {
+                        c.classList.toggle('selected', c.dataset.service === service);
+                    });
+
+                    if (service !== 'siliconflow_free') {
+                        apiConfig.classList.remove('hidden');
+                        renderConfigForm();
+                    }
+
+                    // 加载代理设置
+                    if (isAdmin) {
+                        document.getElementById('universalProxy').value = data.settings.universal_proxy || '';
+                        document.getElementById('socksProxy').value = data.settings.socks_proxy || '';
+                    }
+                }
+            } catch (e) { }
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2000);
+        }
+
+        // 修改密码
+        document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+            const alert = document.getElementById('accountAlert');
+            const oldPwd = document.getElementById('oldPassword').value;
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
+
+            if (!oldPwd || !newPwd) {
+                alert.textContent = '请填写密码';
+                alert.className = 'alert alert-error show';
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                alert.textContent = '两次密码不一致';
+                alert.className = 'alert alert-error show';
+                return;
+            }
+
+            try {
+                const res = await api('/api/auth/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_password: oldPwd, new_password: newPwd })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    alert.textContent = '密码修改成功，请重新登录';
+                    alert.className = 'alert alert-success show';
+                    setTimeout(() => {
+                        localStorage.clear();
+                        window.location.href = '/static/login.html';
+                    }, 1500);
+                } else {
+                    throw new Error(data.detail || '修改失败');
+                }
+            } catch (e) {
+                alert.textContent = e.message;
+                alert.className = 'alert alert-error show';
+            }
+        });
+
+        if (isAdmin) {
+            document.getElementById('userBadge').classList.add('admin');
+            document.getElementById('adminProxySection').style.display = 'block';
+            // document.getElementById('userManageSection').style.display = 'block'; // 如果存在
+        }
+
+        async function loadRegistrationStatus() {
+            try {
+                const res = await api('/api/auth/registration-status');
+                const data = await res.json();
+                const toggle = document.getElementById('registrationToggle');
+                const status = document.getElementById('registrationStatus');
+                if (data.enabled) {
+                    toggle.classList.add('active');
+                    status.textContent = '已开启';
+                } else {
+                    toggle.classList.remove('active');
+                    status.textContent = '已关闭';
+                }
+            } catch (e) { }
+        }
+
+        document.getElementById('registrationToggle').addEventListener('click', async () => {
+            const toggle = document.getElementById('registrationToggle');
+            const status = document.getElementById('registrationStatus');
+            const newEnabled = !toggle.classList.contains('active');
+
+            try {
+                await api('/api/auth/registration-toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: newEnabled })
+                });
+                toggle.classList.toggle('active', newEnabled);
+                status.textContent = newEnabled ? '已开启' : '已关闭';
+            } catch (e) { }
+        });
+
+        async function loadUsers() {
+            try {
+                const res = await api('/api/auth/users');
+                const data = await res.json();
+                document.getElementById('usersBody').innerHTML = data.users.map(u => `
+                    <tr>
+                        <td>${u.username}</td>
+                        <td><span class="status ${u.is_admin ? 'status-completed' : ''}">${u.is_admin ? '管理员' : '用户'}</span></td>
+                        <td>${new Date(u.created_at).toLocaleDateString('zh-CN')}</td>
+                        <td>${u.username !== username ? `<button class="btn btn-danger" onclick="deleteUser('${u.username}')" style="padding:4px 8px;font-size:12px;">删除</button>` : '-'}</td>
+                    </tr>
+                `).join('');
+            } catch (e) { }
+        }
+
+        async function deleteUser(name) {
+            if (!confirm(`确定删除用户 ${name}？`)) return;
+            try {
+                await api(`/api/auth/users/${name}`, { method: 'DELETE' });
+                loadUsers();
+            } catch (e) {
+                alert('删除失败');
+            }
+        }
+
+        // 添加用户
+        const modal = document.getElementById('addUserModal');
+        document.getElementById('addUserBtn').addEventListener('click', () => modal.classList.add('show'));
+        document.getElementById('cancelAddUser').addEventListener('click', () => modal.classList.remove('show'));
+
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const res = await api('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: document.getElementById('newUsername').value,
+                        password: document.getElementById('newUserPassword').value
+                    })
+                });
+                if (res.ok) {
+                    modal.classList.remove('show');
+                    loadUsers();
+                } else {
+                    const data = await res.json();
+                    document.getElementById('modalAlert').className = 'alert alert-error show';
+                    document.getElementById('modalAlert').textContent = data.detail || '创建失败';
+                }
+            } catch (e) { }
+        });
+
+        // 初始化
+        loadSettings();
+    </script>
+</body>
+
+</html>
