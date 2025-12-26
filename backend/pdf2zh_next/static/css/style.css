@@ -31,6 +31,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
+    overscroll-behavior: none;
 }
 
 .container {
@@ -283,8 +284,8 @@ body {
 .header-nav a {
     color: var(--text-secondary);
     text-decoration: none;
-    font-size: 14px;
-    padding: 8px 12px;
+    font-size: 15px;
+    padding: 8px 14px;
     border-radius: 8px;
     transition: all 0.2s ease;
 }
