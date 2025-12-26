@@ -157,14 +157,82 @@
         }
 
         @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .welcome-text {
+                font-size: 13px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .stat-label {
+                font-size: 12px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
             .history-item {
                 flex-direction: column;
                 align-items: flex-start;
+                padding: 12px;
+            }
+
+            .history-item-title {
+                font-size: 14px;
+                white-space: normal;
+                word-break: break-all;
+            }
+
+            .history-item-meta {
+                font-size: 11px;
             }
 
             .history-item-actions {
                 width: 100%;
                 justify-content: flex-end;
+                margin-top: 8px;
+            }
+
+            .btn-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-container {
+                padding: 12px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .action-bar {
+                margin-bottom: 20px;
             }
         }
     </style>

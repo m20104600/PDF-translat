@@ -116,6 +116,85 @@
         .save-indicator.show {
             opacity: 1;
         }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .settings-container {
+                padding: 16px;
+            }
+
+            .settings-section {
+                padding: 16px;
+            }
+
+            .settings-section h3 {
+                font-size: 16px;
+            }
+
+            .section-desc {
+                font-size: 13px;
+            }
+
+            .service-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 8px;
+            }
+
+            .service-card {
+                padding: 12px;
+            }
+
+            .service-card .icon svg {
+                width: 28px;
+                height: 28px;
+            }
+
+            .service-card .name {
+                font-size: 13px;
+            }
+
+            .service-card .desc {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .settings-container {
+                padding: 12px;
+            }
+
+            .settings-section {
+                padding: 12px;
+                margin-bottom: 16px;
+            }
+
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+
+            .service-card {
+                padding: 10px;
+            }
+
+            .service-card .name {
+                font-size: 12px;
+            }
+
+            .service-card .desc {
+                font-size: 10px;
+            }
+
+            /* Proxy config mobile - 垂直堆叠 */
+            .grid-2 {
+                grid-template-columns: 1fr !important;
+                gap: 12px;
+            }
+
+            .field-hint {
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 
