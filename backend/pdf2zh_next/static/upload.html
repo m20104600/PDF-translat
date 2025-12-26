@@ -812,7 +812,7 @@
                             <div class="history-item-date">${formatDate(item.created_at)}</div>
                         </div>
                         <div class="history-item-actions">
-                            <button class="icon-btn success" onclick="downloadFile('/api/translate/download/${item.task_id}?file_type=mono')" title="下载译文 (单语)" style="font-weight:bold;font-size:13px;width:32px;">A</button>
+                            <button class="icon-btn success" onclick="downloadFile('/api/translate/download/${item.task_id}?file_type=mono')" title="下载译文 (单语)" style="font-weight:bold;font-size:13px;width:32px;">单</button>
                             <button class="icon-btn success" onclick="downloadFile('/api/translate/download/${item.task_id}?file_type=dual')" title="下载译文 (双语)" style="font-weight:bold;font-size:13px;width:32px;">双</button>
                             <button class="icon-btn danger" onclick="deleteHistory('${item.task_id}')" title="删除">🗑️</button>
                         </div>
