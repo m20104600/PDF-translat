@@ -16,9 +16,9 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
         .stat-card {
@@ -35,12 +35,15 @@
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: clamp(14px, 4vw, 32px);
             font-weight: 700;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .action-bar {
@@ -170,21 +173,38 @@
             }
 
             .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                margin-bottom: 24px;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 6px;
+                margin-bottom: 16px;
             }
 
             .stat-card {
-                padding: 16px;
+                padding: 10px 6px;
+                text-align: center;
             }
 
             .stat-label {
-                font-size: 12px;
+                font-size: 9px;
+                margin-bottom: 4px;
+                white-space: nowrap;
             }
 
             .stat-value {
-                font-size: 24px;
+                font-size: clamp(11px, 3vw, 14px);
+            }
+
+            /* 用户管理表格紧凑 */
+            .table th,
+            .table td {
+                padding: 8px 6px;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            .status {
+                padding: 2px 6px;
+                font-size: 10px;
+                white-space: nowrap;
             }
 
             .history-item {
