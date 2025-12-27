@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>仪表盘 - PDF 翻译器</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
@@ -364,6 +365,19 @@
                 return;
             }
 
+            // 立即从 localStorage 渲染用户信息
+            const storedUsername = localStorage.getItem('username');
+            const storedIsAdmin = localStorage.getItem('is_admin') === 'true';
+
+            if (storedUsername) {
+                const userBadge = document.getElementById('userBadge');
+                userBadge.textContent = storedUsername;
+                if (storedIsAdmin) {
+                    userBadge.classList.add('admin');
+                }
+                document.getElementById('welcomeMsg').textContent = `欢迎, ${storedUsername}`;
+            }
+
             try {
                 const res = await fetch(`${API_BASE}/auth/me`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -371,7 +385,10 @@
                 if (!res.ok) throw new Error('Auth failed');
                 currentUser = await res.json();
 
-                // 更新用户显示
+                // 更新 localStorage 和 UI 确保一致性
+                localStorage.setItem('username', currentUser.username);
+                localStorage.setItem('is_admin', currentUser.is_admin);
+
                 const userBadge = document.getElementById('userBadge');
                 userBadge.textContent = currentUser.username;
                 if (currentUser.is_admin) {
