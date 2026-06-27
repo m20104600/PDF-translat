@@ -211,3 +211,4 @@ pip install -e ./backend
 > 
 > [!NOTE]
 > `data/` 目录及其子目录会在首次运行时自动创建，无需手动操作。
+> [![GitHub Roast](https://githubroast.icu/api/card/m20104600)](https://githubroast.icu/u/m20104600)
